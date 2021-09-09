@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+ 
+  <script>
+  onScan.attachTo(document);
+// Register event listener
+document.addEventListener('scan', function(sScancode, iQuantity) {
+    setCookie("cardNo", sScancode, 1);
+	window.location.href = 'visitor_signin_2.html';
+}); 
+  </script>
+<form id="cardSubmit">
+  <div class="form-group">
+    <h1 class="fw-light">Card / Fob Number</h1>
+    <input type="text" class="form-control  form-control-lg" id="inputCardNo" aria-describedby="CardNoShit" placeholder="Please tap your fob or RUID card against the reader on the desk.">
+  </div>
+</form>
+{% endblock %}
+

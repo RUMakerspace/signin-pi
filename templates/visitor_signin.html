@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+ 
+  <script>
+  onScan.attachTo(document);
+// Register event listener
+document.addEventListener('scan', function(sScancode, iQuantity) {
+    alert(iQuantity + 'x ' + sScancode); 
+}); 
+  </script>
+
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Rutgers Makerspace Sign-In<br>Livingston</h1>
+        <p class="lead text-muted">This sign-in is for returning visitors to the Rutgers Makerspace at Livingston, whether students, faculty, co-working members, or other authorized users of this space.</p>
+        <p>
+          <a href="signin/1" class="btn btn-lg btn-danger">Continue To Sign-In</a>
+        </p>
+      </div>
+    </div>
+{% endblock %}
+

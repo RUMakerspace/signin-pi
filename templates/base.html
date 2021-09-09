@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="{{ url_for('static', filename='onscan.js') }}"></script>
+
+<!-- Cookie Helpers for visitor sign-in-->
+
+<script>
+function setCookie(cname, cvalue, exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function resetRestart() {
+setCookie("cardNo",null, 0);
+window.location.href="/";
+}
+</script>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" {% if prideMonth %}style="
+	background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet, red);
+"{% endif %}>
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">RU-Makerspace Sign-In</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/signin">Visitor Sign-In</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Admin Sign-In</a>
+          </li>
+        </ul>
+        <div class="d-flex">
+          <button class="btn btn-danger" onclick="resetRestart()">Start Sign-In Over</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+<section class="py-5 text-center container">
+<div class="col-lg-6 col-md-8 mx-auto">
+<h1 class="fw-light"> <br> </h1>
+</div>
+
+{% block content %}
+
+
+{% endblock %}
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="container">
+    <p>© 2012–2021 Rutgers, The State University of New Jersey</p>
+  </footer>
+</main>
+</body>
+
+
