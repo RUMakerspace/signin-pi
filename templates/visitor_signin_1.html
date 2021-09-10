@@ -2,12 +2,17 @@
 {% block content %}
  
   <script>
+  
+function tH(e) {
+    setCookie("cardNo",e.detail.scanCode, 1);
+	console.log(e)
+	window.location.href = 'visitor_signin_2.html?cardNo=' + getCookie("cardNo");
+return e.detail.code;
+}
+
   onScan.attachTo(document);
 // Register event listener
-document.addEventListener('scan', function(sScancode, iQuantity) {
-    setCookie("cardNo", sScancode, 1);
-	window.location.href = 'visitor_signin_2.html';
-}); 
+document.addEventListener('scan', tH); 
   </script>
 <form id="cardSubmit">
   <div class="form-group">
