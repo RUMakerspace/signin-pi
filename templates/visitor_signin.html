@@ -2,19 +2,58 @@
 {% block content %}
  
   <script>
+  
+function tH(e) {
+    //setCookie("cardNo",e.detail.scanCode, 1);
+	console.log(e)
+	post("/api/checkSignin", {'cardNo': e.detail.scanCode})
+	
+    return e.detail.code;
+}
+
   onScan.attachTo(document);
 // Register event listener
-document.addEventListener('scan', function(sScancode, iQuantity) {
-    alert(iQuantity + 'x ' + sScancode); 
-}); 
+document.addEventListener('scan', tH); 
+
+/**
+ * sends a request to the specified url from a form. this will change the window location.
+ * @param {string} path the path to send the post request to
+ * @param {object} params the parameters to add to the url
+ * @param {string} [method=post] the method to use on the form
+ */
+
+function post(path, params, method='post') {
+
+  // The rest of this code assumes you are not using a library.
+  // It can be made less verbose if you use one.
+  const form = document.createElement('form');
+  form.method = method;
+  form.action = path;
+
+  for (const key in params) {
+    if (params.hasOwnProperty(key)) {
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = key;
+      hiddenField.value = params[key];
+
+      form.appendChild(hiddenField);
+    }
+  }
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
   </script>
 
     <div class="row py-lg-5">
-      <div class="col-lg-6 col-md-8 mx-auto">
+      <div class="col-lg-8 col-md-10 mx-auto">
         <h1 class="fw-light">Rutgers Makerspace Sign-In<br>Livingston</h1>
         <p class="lead text-muted">This sign-in is for returning visitors to the Rutgers Makerspace at Livingston, whether students, faculty, co-working members, or other authorized users of this space.</p>
         <p>
-          <a href="signin/1" class="btn btn-lg btn-danger">Continue To Sign-In</a>
+          <h1 class="fw-light">Please tap your fob or RUID card against the reader on the desk.</h1>
+    
         </p>
       </div>
     </div>

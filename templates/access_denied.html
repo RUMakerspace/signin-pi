@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="row py-lg-5">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <h1 class="fw-light">Access Denied</h1>
+      </div>
+	</div>
+	<div class="row py-lg-5">
+      <div class="col mx-auto">
+	  {% if deniedType == "cardNotFound" %}
+      <h2 class="fw-light">This card is not associated with an authorized user.  Please verify that this is the correct card or fob to sign in.</h2>
+	  {% endif %}
+	  {% if deniedType == "expired" %}
+	  <h2 class="fw-light">Unfortunately this membership is expired.  Please talk to one of our staff members to get your membership renewed.</h2>
+	  {% endif %}
+	</div>
+{% endblock %}
+
