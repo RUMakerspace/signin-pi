@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS group_memberships (
 
 """
 
-create_table_group_member_users = """
+create_table_group_members = """
 CREATE TABLE IF NOT EXISTS group_members ( 
 	group_membership_pk INT NOT NULL,
 	rums_pk INT NOT NULL
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS group_members (
 """
 
 sqlite_tables = [
-    create_table_group_member_users,
+    create_table_group_members,
     create_table_cards,
     create_table_group_memberships,
     create_table_visits,
@@ -89,6 +89,7 @@ def get_db():
 
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
+    get_db().commit()
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
