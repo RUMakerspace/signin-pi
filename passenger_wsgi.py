@@ -29,8 +29,11 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-#Datastore stuff
+
+# Datastore stuff
 from db.common_functions import *
+from db.sqlite_store import setupTables
+
 
 ### LOGIN MANAGER
 login_manager = flask_login.LoginManager()
@@ -118,16 +121,17 @@ def apiT1():
 
     print(request.form.to_dict())
     return redirect(url_for("t1"))
-	
+
+
 @application.route("/admin/", methods=["GET", "POST"])
 @login_required
 def admPage():
     return render_template("admin.html", prideMonth=True, visits=get_last_visits())
-	
+
 
 @application.route("/testquery")
 def testquery():
-	#create_solo_membership(1, "", "", "")
-	##get_last_visits()
-	create_fake_users()
-	return "no"
+    # create_solo_membership(1, "", "", "")
+    ##get_last_visits()
+    create_fake_visits()
+    return "no"

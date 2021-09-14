@@ -9,6 +9,7 @@ DATABASE = "./db/visits.db"
 
 create_table_users = """
 CREATE TABLE IF NOT EXISTS users ( 
+	rums_pk INTEGER PRIMARY KEY AUTOINCREMENT,
    	netid VARCHAR(20),
 	email VARCHAR(50) NOT NULL,
 	name VARCHAR(50) NOT NULL,
@@ -76,7 +77,7 @@ sqlite_tables = [
 
 
 def setupTables():
-    for tableDat in tabLES:
+    for tableDat in sqlite_tables:
         query_db(tableDat)
 
 
