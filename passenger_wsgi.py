@@ -9,7 +9,16 @@ from queue import Queue
 
 # Flask
 import sqlite3
-from flask import Flask, render_template, redirect, url_for, jsonify, request, g
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    url_for,
+    jsonify,
+    request,
+    g,
+    make_response,
+)
 import flask
 
 # Flask Login
@@ -99,7 +108,12 @@ def logout():
 
 @application.route("/")
 def indexPage():
-    return render_template("visitor_signin.html", prideMonth=True)
+    xg = make_response(render_template("visitor_signin.html", prideMonth=True))
+    if "campus" not in request.cookies.to_dict():
+        xg.set_cookie("campus", "livi", max_age=60 * 60 * 24 * 365 * 2)  # 2 years.
+
+    print(request.cookies.to_dict())
+    return xg
 
 
 @application.route("/successful")
@@ -134,6 +148,7 @@ def firstVisit():
 @application.route("/admin/", methods=["GET", "POST"])
 @login_required
 def admPage():
+    print(request.cookies.to_dict())
     return render_template("admin.html", prideMonth=True, visits=get_last_visits())
 
 

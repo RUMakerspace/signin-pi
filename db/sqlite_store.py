@@ -12,7 +12,8 @@ DATABASE = "./db/visits.db"
 create_table_sites = """
 CREATE TABLE IF NOT EXISTS users ( 
 	site_pk INTEGER PRIMARY KEY AUTOINCREMENT,
-	site_name VARCHAR(20) NOT NULL UNIQUE;
+	site_name VARCHAR(20) NOT NULL UNIQUE,
+	short_name VARCHAR(20) NOT NULL;
 );
 
 """
