@@ -123,6 +123,14 @@ def apiT1():
     return redirect(url_for("t1"))
 
 
+@application.route("/firstvisit", methods=["GET", "POST"])
+def firstVisit():
+    if request.method == "POST":
+        print(request.form.to_dict())
+
+    return render_template("firstvisit.html", prideMonth=True)
+
+
 @application.route("/admin/", methods=["GET", "POST"])
 @login_required
 def admPage():
@@ -131,7 +139,14 @@ def admPage():
 
 @application.route("/testquery")
 def testquery():
-    # create_solo_membership(1, "", "", "")
-    ##get_last_visits()
-    create_fake_visits()
+    create_user(
+        "125719231257",
+        "Kim Chase",
+        "tjf128",
+        "tjf128@docs.rutgers.edu",
+        "",
+        "",
+        "Test Membership",
+    )
+
     return "no"
