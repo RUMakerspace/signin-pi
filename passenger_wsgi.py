@@ -37,13 +37,15 @@ application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./db/datastore_local.
 application.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 
-datastore = SQLAlchemy(application)
-
 users = Users("./db/users.json", application)
 
-datastore.create_all()
 # This is used to ensure all tables exist.
 
+from model.datastore import db
+
+application.app_context().push()
+db.init_app(application)
+db.create_all()
 
 # Datastore stuff
 

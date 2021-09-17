@@ -4,6 +4,17 @@ from datetime import datetime
 db = SQLAlchemy()
 
 
+class User(db.Model):
+    rums_pk = db.Column(db.Integer, primary_key=True)
+    netid = db.Column(db.String(20), unique=True, nullable=True)
+    email = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    picture = db.Column(db.LargeBinary, nullable=True)
+
+    def __repr__(self):
+        return "<User {} {}>".format(rums_pk, email)
+
+
 class Visit(db.Model):
     visit_pk = db.Column(db.Integer, primary_key=True)
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
