@@ -29,6 +29,7 @@ class User(db.Model):
     email = db.Column(db.String(50), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     picture = db.Column(db.LargeBinary, nullable=True)
+    pronouns = db.Column(db.String(20), nullable=True)
 
     def __repr__(self):
         return "<User {} {}>".format(rums_pk, email)
