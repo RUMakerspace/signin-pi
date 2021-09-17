@@ -34,6 +34,7 @@ class Card(db.Model):
 
 class Visit(db.Model):
     visit_pk = db.Column(db.Integer, primary_key=True)
+    site_pk = db.Column(db.integer, db.ForeignKey("site.site_pk"), nullable=False)
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
     card_pk = db.Column(db.String(20), db.ForeignKey("card.card_pk"), nullable=False)
     entry_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
