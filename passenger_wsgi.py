@@ -42,6 +42,7 @@ users = Users("./db/users.json", application)
 # This is used to ensure all tables exist.
 
 from model.datastore import db
+from helpers.membership import allowEntry
 
 application.app_context().push()
 db.init_app(application)
@@ -112,7 +113,15 @@ def logout():
     return redirect(url_for("indexPage"))
 
 
-from model.datastore import Site
+from model.datastore import (
+    Site,
+    Card,
+    User,
+    Visit,
+    SoloMembership,
+    GroupMembership,
+    GroupMember,
+)
 
 
 @application.route("/")
@@ -147,9 +156,36 @@ def deniedAccess():
 
 @application.route("/api/checkSignin", methods=["POST"])
 def apiT1():
+
+    apiResponse = make_response(redirect(url_for("t1")))
+
     campus = None
     if "campus" in request.cookies.to_dict():
-        campus = requests.cookies.to_dict()["campus"]
+        campus = int(request.cookies.to_dict()["campus"])
+
+    currentSite = Site.query.filter_by(site_pk=campus).first()
+
+    print(currentSite)
+
+    # Forcibly converting to/from gets us
+    cardNo = str(int(str((request.form.to_dict())["cardNo"])))
+    apiResponse.set_cookie("cardNo", cardNo)
+
+    matchCards = Card.query.filter_by(card_no=cardNo)
+
+    if matchCards.count() == 0:  # No card found
+        tempCard = Card(card_no=cardNo)
+        db.session.add(tempCard)
+        db.session.commit()
+        print("added card {}".format(cardNo))
+
+    if matchCards.count() != 0:
+        print(list(matchCards))
+
+    if (
+        currentSite.allow_entry_without_profile
+    ):  # if we can let them in without signing in.
+        return t1
 
     return redirect(url_for("t1"))
 
@@ -189,8 +225,11 @@ def admPage():
 
 @application.route("/testquery")
 def testquery():
-    testCard = Card(card_no="1257125712571923")
-    datastore.session.add(testCard)
-    datastore.session.commit()
+
+    # gq = SoloMembership(rums_pk=1, site_pk=1, start_date=datetime.utcnow(), human_name="Testy Bitch")
+    # db.session.add(gq)
+    # db.session.commit()
+
+    allowEntry(1, 1)
 
     return "no"

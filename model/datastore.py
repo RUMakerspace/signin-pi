@@ -15,12 +15,12 @@ db = SQLAlchemy()
 
 class Card(db.Model):
     card_pk = db.Column(db.Integer, primary_key=True)
-    card_no = db.Column(db.String(20), nullable=False)
+    card_no = db.Column(db.String(20), unique=True, nullable=False)
     zk_pk = db.Column(db.Integer, nullable=True)
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
 
     def __repr__(self):
-        return "<Card {} {}>".format(card_pk, card_no)
+        return "<Card {} {}>".format(self.card_pk, self.card_no)
 
 
 class User(db.Model):
@@ -30,15 +30,17 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False)
     picture = db.Column(db.LargeBinary, nullable=True)
     pronouns = db.Column(db.String(20), nullable=True)
+    rutgers_active = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return "<User {} {}>".format(rums_pk, email)
+        return "<User {} {}>".format(self.rums_pk, self.email)
 
 
 class Visit(db.Model):
     visit_pk = db.Column(db.Integer, primary_key=True)
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
     card_pk = db.Column(db.String(20), db.ForeignKey("card.card_pk"), nullable=False)
+    site_pk = db.Column(db.String(20), db.ForeignKey("site.site_pk"), nullable=False)
     entry_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     exit_time = db.Column(
         db.DateTime, nullable=True, default=None
@@ -46,7 +48,9 @@ class Visit(db.Model):
     granted = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return "<Visit {} {} {} {}>".format(visit_pk, card_no, entry_time, granted)
+        return "<Visit {} {} {} {}>".format(
+            self.visit_pk, self.card_no, self.entry_time, self.granted
+        )
 
 
 # This allows us to have global site and visit tracking unique to a given site and stuff. That way Ag stuff doesn't interfere with Livi, etc.
@@ -67,6 +71,7 @@ class Site(db.Model):
 
 class SoloMembership(db.Model):
     membership_pk = db.Column(db.Integer, primary_key=True)
+    site_pk = db.Column(db.Integer, db.ForeignKey("site.site_pk"), nullable=False)
     rums_pk = db.Column(
         db.Integer, db.ForeignKey("user.rums_pk"), nullable=True
     )  # we can template and set them up without a user but it's heavily discouraged.
@@ -82,6 +87,7 @@ class SoloMembership(db.Model):
 
 class GroupMembership(db.Model):
     membership_pk = db.Column(db.Integer, primary_key=True)
+    site_pk = db.Column(db.String(20), db.ForeignKey("card.card_pk"), nullable=False)
     human_name = db.Column(db.String(20), nullable=False)
     start_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     end_date = db.Column(db.DateTime, nullable=True)
