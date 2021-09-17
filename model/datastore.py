@@ -4,6 +4,16 @@ from datetime import datetime
 db = SQLAlchemy()
 
 
+class Card(db.model):
+    card_pk = db.Column(db.Integer, primary_key=True)
+    card_no = db.Column(db.String(20), nullable=False)
+    zk_pk = db.Column(db.Integer, nullable=True)
+    rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
+
+    def __repr__(self):
+        return "<Card {} {}>".format(card_pk, card_no)
+
+
 class User(db.Model):
     rums_pk = db.Column(db.Integer, primary_key=True)
     netid = db.Column(db.String(20), unique=True, nullable=True)
