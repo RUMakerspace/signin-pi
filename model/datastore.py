@@ -1,40 +1,11 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-
-def cardExists(card_no):
-    card_no = str(int(str(card_no)))
-
-    return Card.query.filter_by(card_no=card_no)
-
-
-class User(db.Model):
-    rums_pk = db.Column(db.Integer, primary_key=True)
-    netid = db.Column(db.String(20), unique=True, nullable=True)
-    email = db.Column(db.String(50), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-
-
-# We store card number as a string due to the undetermined length of it.  Convert to int and back to string for all operations.
-class Card(db.Model):
-    card_pk = db.Column(db.Integer, primary_key=True)
-    rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
-    card_no = db.Column(db.String(20), unique=True, nullable=False)
-    zk_pk = db.Column(db.Integer, nullable=True, unique=True)
-
-    # The ZK_PK is stored here instead of in the user model due to the overlap in how ZK stores cards; as people.
-
-    def __repr__(self):
-        return "<Card %r>" % self.card_no
-
-
-"""INSERT INTO visits (rums_pk, card_no, entry_time, exit_time, granted) VALUES ({}, "{}", datetime('now'), {} 1)"""
+db = SQLAlchemy()
 
 
 class Visit(db.Model):
     visit_pk = db.Column(db.Integer, primary_key=True)
-    site_pk = db.Column(db.integer, db.ForeignKey("site.site_pk"), nullable=False)
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
     card_pk = db.Column(db.String(20), db.ForeignKey("card.card_pk"), nullable=False)
     entry_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -53,6 +24,7 @@ class Site(db.Model):
     site_name = db.Column(db.String(20), nullable=False)
     short_name = db.Column(db.String(20), nullable=False)
     allow_entry_without_profile = db.Column(db.Boolean, nullable=False, default=False)
+    rutgers_active_only = db.Column(db.Boolean, nullable=False, default=False)
     # Allow_entry_w.o_profile is used to track site-specific sign-in where their visit
     # is recorded without a person ID so it can later be associated with a rums_pk.
 
