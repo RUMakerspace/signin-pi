@@ -10,7 +10,7 @@
 	
 	           <div class="row"> 
 		   <div class="col">
-       set campus: <a href="#">livi</a> | <a href="#">cook</a> | <a href="#">honors college</a>
+       <ul><p>set campus: </p>{% for campus in campuses %}<li><a href="/api/setCampus/{{ campus.short_name }}">{{ campus.short_name }}</a></li> {% endfor %}</ul>
       </div>
 	  </div>
 	
