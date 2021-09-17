@@ -3,8 +3,17 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+# Site
+# User
+# Card
+# Visit
 
-class Card(db.model):
+# SoloMembership
+# GroupMembership
+# GroupMember
+
+
+class Card(db.Model):
     card_pk = db.Column(db.Integer, primary_key=True)
     card_no = db.Column(db.String(20), nullable=False)
     zk_pk = db.Column(db.Integer, nullable=True)
