@@ -17,7 +17,7 @@ def allowEntry(rums_pk, site_pk):
 
     currentUser = currentUser.first()
 
-    print(currentUser)
+    print("Found user\t{}".format(currentUser))
 
     currentSite = Site.query.filter_by(site_pk=site_pk).first()
 
@@ -27,18 +27,43 @@ def allowEntry(rums_pk, site_pk):
         if currentSite.rutgers_active_only:
             return False  # deny, site is for only rutgers community.
         else:
-            return hasValidMembership(rums_pk, site_pk)  # check valid site memberships.
+            return hasValidMembership(
+                currentUser, currentSite
+            )  # check valid site memberships.
 
 
-def hasValidMembership(rums_pk, site_pk):
+def hasValidMembership(currentUser, currentSite):
     currentDateTime = datetime.utcnow()  # To do the filter comparison.
 
-    # XXX TODO, this does not work.
-    soloType = (
-        SoloMembership.query.filter_by(rums_pk=rums_pk)
-        .filter_by(SoloMembership.start_date >= currentDateTime)
-        .filter_by(SoloMembership.end_date <= currentDateTime)
+    # This will get us only valid solo memberships
+    # after right now that haven't expired yet and
+    # are for this site type.
+
+    soloType = SoloMembership.query.filter(
+        SoloMembership.rums_pk == currentUser.rums_pk
+        and SoloMembership.start_date >= currentDateTime
+        and (
+            (SoloMembership.end_date <= currentDateTime)
+            or (SoloMembership.end_date == None)
+        )
+        and (SoloMembership.site_pk == currentSite.site_pk)
     )
 
-    print(soloType)
-    groupType = list(GroupMember.query.filter_by(rums_pk=rums_pk))
+    print(soloType.first())
+
+    groupType = GroupMember.query.join(
+        GroupMembership,
+        GroupMember.group_membership_pk == GroupMembership.membership_pk,
+    ).filter(
+        GroupMember.rums_pk == currentUser.rums_pk
+        and GroupMembership.start_date >= currentDateTime
+        and (
+            (GroupMembership.end_date <= currentDateTime)
+            or (GroupMembership.end_date == None)
+        )
+        and (GroupMembership.site_pk == currentSite.site_pk)
+    )
+
+    print(groupType.first())
+
+    # groupType = list(GroupMember.query.filter_by(rums_pk=rumspk))

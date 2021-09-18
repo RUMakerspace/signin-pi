@@ -226,7 +226,13 @@ def admPage():
 @application.route("/testquery")
 def testquery():
 
-    # gq = SoloMembership(rums_pk=1, site_pk=1, start_date=datetime.utcnow(), human_name="Testy Bitch")
+    currentSite = Site.query.filter_by(site_pk=1).first()
+    currentUser = User.query.filter_by(rums_pk=1).first()
+    currentGroupMembership = GroupMembership.query.get(1)
+
+    # gq = GroupMembership(site_pk=currentSite.site_pk, admin_user = currentUser.rums_pk, human_name="Test Group Membership", start_date = datetime.utcnow())
+
+    # gq = GroupMember(rums_pk=currentUser.rums_pk, group_membership_pk = currentGroupMembership.membership_pk)
     # db.session.add(gq)
     # db.session.commit()
 

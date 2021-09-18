@@ -33,7 +33,9 @@ class User(db.Model):
     rutgers_active = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return "<User {} {}>".format(self.rums_pk, self.email)
+        return "<User pk:{} email:{} name:{} pronouns:{}>".format(
+            self.rums_pk, self.email, self.name, self.pronouns
+        )
 
 
 class Visit(db.Model):
@@ -94,7 +96,9 @@ class GroupMembership(db.Model):
     admin_user = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
 
     def __repr__(self):
-        return """<GroupMembership {} {}>""".format(self.membership_pk, self.human_name)
+        return """<GroupMembership pk:{} readable_name:{}>""".format(
+            self.membership_pk, self.human_name
+        )
 
 
 class GroupMember(db.Model):
@@ -105,4 +109,6 @@ class GroupMember(db.Model):
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=False)
 
     def __repr__(self):
-        return """<GroupMember {}>""".format(self.membership_pk)
+        return """<GroupMember pk:{} rums_pk:{}>""".format(
+            self.membership_pk, self.rums_pk
+        )
