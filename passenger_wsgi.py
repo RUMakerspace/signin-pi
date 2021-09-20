@@ -187,6 +187,13 @@ def deniedAccess():
     )
 
 
+# we need to change it such that the card model must have a rums_pk
+# but the rums_pk can have nothing except itself.
+# This allows us to have "shadow profiles" until it's time to set
+# them up and guarantees we can maintain the one-to-many of users to
+# cards.
+
+
 @application.route("/api/checkSignin", methods=["POST"])
 def userHasEntry():
 
@@ -225,6 +232,10 @@ def userHasEntry():
         return t1(
             "We've collected your card number for now; we can re-associate it with your profile at a later date."
         )  # if the user can enter as-is we collect their card number and say granted.  Otherwise we fill it out.
+    else:
+        firstVisitResp = make_response(redirect(url_for("firstVisit")))
+        firstVisitResp.set_cookie("cardNo", cardNo)
+        return firstVisitResp
 
     return apiResponse
 
@@ -245,9 +256,26 @@ def apiSetCampus(campusShort):
 @application.route("/firstvisit", methods=["GET", "POST"])
 def firstVisit():
     if request.method == "POST":
-        print(request.form.to_dict())
+        data = request.form.to_dict()
+        cookies = request.cookies.to_dict()
 
-    return render_template("firstvisit.html", prideMonth=True)
+        print(cookies)
+
+        tempUser = User(
+            email=data["inputRUEmail"],
+            netid=data["inputNetID"],
+            name=data["inputName"],
+            rutgers_active=1,
+        )
+        db.session.add(tempUser)
+        db.session.commit()
+
+        return redirect(url_for("t1"))
+
+    else:
+        return render_template("firstvisit.html", prideMonth=True)
+
+    # return render_template("firstvisit.html", prideMonth=True)
 
 
 @application.route("/admin/", methods=["GET", "POST"])
