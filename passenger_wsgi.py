@@ -43,6 +43,8 @@ users = Users("./db/users.json", application)
 
 from model.datastore import db
 from helpers.membership import allowEntry
+from helpers.membership import getAllMemberships
+
 
 application.app_context().push()
 db.init_app(application)
@@ -140,11 +142,42 @@ def indexPage():
     return xg
 
 
-@application.route("/successful")
-def t1():
+@application.route("/entryGranter")
+def t1(message=None):
+
+    cookies = request.cookies.to_dict()
+
+    currentSite = Site.query.filter(Site.site_pk == cookies["campus"]).first()
+    currentCard = Card.query.filter(Card.card_no == cookies["cardNo"]).first()
+    currentUser = None
+
+    if currentCard.rums_pk != None:
+        currentUser = User.query.filter(User.rums_pk == currentCard.rums_pk).first()
+
+    currentUserVisits = Visit.query.filter(
+        Visit.rums_pk == currentUser.rums_pk
+    ).order_by(Visit.entry_time.desc())
+
+    numVisits = currentUserVisits.count()
+    lastVisitDate = currentUserVisits.first().entry_time.strftime("%Y/%m/%d")
+
+    print("current user")
+    print(currentUser)
+    print(cookies)
+
+    memberships = getAllMemberships(currentUser.rums_pk)
     pageData = {}
     # pageData should contain their name, their NetID, their 'division', and their membership types.
-    return render_template("signedIn.html", prideMonth=True, pageData={})
+    return render_template(
+        "signedIn.html",
+        prideMonth=True,
+        site=currentSite,
+        card=currentCard,
+        user=currentUser,
+        numVisits=numVisits,
+        lastVisitDate=lastVisitDate,
+        memberships=memberships,
+    )
 
 
 @application.route("/denied")
@@ -155,17 +188,20 @@ def deniedAccess():
 
 
 @application.route("/api/checkSignin", methods=["POST"])
-def apiT1():
+def userHasEntry():
+
+    # The response is to set the appropriate cookies for
+    # passing it back, so that we can safely check on
+    # the next page without recycling them.
 
     apiResponse = make_response(redirect(url_for("t1")))
 
+    # get us the site pk
     campus = None
     if "campus" in request.cookies.to_dict():
         campus = int(request.cookies.to_dict()["campus"])
 
     currentSite = Site.query.filter_by(site_pk=campus).first()
-
-    print(currentSite)
 
     # Forcibly converting to/from gets us
     cardNo = str(int(str((request.form.to_dict())["cardNo"])))
@@ -173,37 +209,35 @@ def apiT1():
 
     matchCards = Card.query.filter_by(card_no=cardNo)
 
-    if matchCards.count() == 0:  # No card found
+    # If the card does not exist in the database, add it.
+    if matchCards.count() == 0:
         tempCard = Card(card_no=cardNo)
         db.session.add(tempCard)
         db.session.commit()
         print("added card {}".format(cardNo))
+        # Reload our reference in case the above changed it.
+        matchCards = Card.query.filter_by(card_no=cardNo)
 
     if matchCards.count() != 0:
         print(list(matchCards))
 
-    if (
-        currentSite.allow_entry_without_profile
-    ):  # if we can let them in without signing in.
-        return t1
+    if currentSite.allow_entry_without_profile:
+        return t1(
+            "We've collected your card number for now; we can re-associate it with your profile at a later date."
+        )  # if the user can enter as-is we collect their card number and say granted.  Otherwise we fill it out.
 
-    return redirect(url_for("t1"))
+    return apiResponse
 
 
 @application.route("/api/setCampus/<campusShort>", methods=["GET"])
 def apiSetCampus(campusShort):
 
     xg = make_response(redirect(url_for("indexPage")))
-    # if "campus" not in request.cookies.to_dict():
-
-    print(campusShort)
 
     campusID = (Site.query.filter_by(short_name=campusShort)).first().site_pk
 
-    print(int(str(campusID)))
-
     xg.set_cookie("campus", str(campusID), max_age=60 * 60 * 24 * 365 * 2)  # 2 years.
-    # return "Campus not set, log in to admin page to set please."
+
     print(request.cookies.to_dict())
     return xg
 
@@ -220,7 +254,28 @@ def firstVisit():
 @login_required
 def admPage():
     print(request.cookies.to_dict())
-    return render_template("admin.html", prideMonth=True, campuses=Site.query.all())
+
+    campuses = Site.query.all()
+    visits = Visit.query.join(User, Visit.rums_pk == User.rums_pk).limit(20).all()
+
+    solomemberships = SoloMembership.query.limit(20).all()
+    groupmem = (
+        GroupMember.query.join(
+            GroupMembership,
+            GroupMember.group_membership_pk == GroupMembership.membership_pk,
+        )
+        .limit(20)
+        .all()
+    )
+
+    return render_template(
+        "admin.html",
+        prideMonth=True,
+        campuses=campuses,
+        visits=visits,
+        group_memberships=groupmem,
+        solo_memberships=solomemberships,
+    )
 
 
 @application.route("/testquery")
@@ -230,12 +285,17 @@ def testquery():
     currentUser = User.query.filter_by(rums_pk=1).first()
     currentGroupMembership = GroupMembership.query.get(1)
 
+    # th = Visit(rums_pk=1, card_pk=1, site_pk=1, entry_time=datetime.utcnow(), granted=1)
+    # db.session.add(th)
+    # db.session.commit()
+
     # gq = GroupMembership(site_pk=currentSite.site_pk, admin_user = currentUser.rums_pk, human_name="Test Group Membership", start_date = datetime.utcnow())
 
     # gq = GroupMember(rums_pk=currentUser.rums_pk, group_membership_pk = currentGroupMembership.membership_pk)
     # db.session.add(gq)
     # db.session.commit()
 
-    allowEntry(1, 1)
+    # if allowEntry(1, 1):
+    #    return "yer in bitch"
 
     return "no"

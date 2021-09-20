@@ -61,7 +61,30 @@
   
   
   </div>
-  <div class="tab-pane fade" id="memberships" role="tabpanel" aria-labelledby="memberships-tab">individual memberships</div>
+  <div class="tab-pane fade" id="memberships" role="tabpanel" aria-labelledby="memberships-tab">
+    <table class="table table-responsive">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Membership Name</th>
+      <th scope="col">Start</th>
+	  <th scope="col">End</th>
+	  <th scope="col">Currently Valid?</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for membership in solo_memberships %}
+  <tr>
+  <td><a href=#">{{membership.human_name}}</a></td>
+  <td>member</td>
+  
+  </tr>
+  
+  {% endfor %}
+  
+  </tbody>
+  
+  </div>
   <div class="tab-pane fade" id="group-memberships" role="tabpanel" aria-labelledby="group-memberships-tab">group memberships</div>
     <div class="tab-pane fade" id="query" role="tabpanel" aria-labelledby="query-tab">query page</div>
 </div>
