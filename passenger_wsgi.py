@@ -173,7 +173,10 @@ def simpleGranted():
 @application.route("/entryGranter")
 def t1(message=None):
 
-    cookies = request.cookies.to_dict()
+    if "loadTimer" in (request.args.to_dict()):
+        loadTimer = request.args.to_dict()["loadTimer"]
+    else:
+        loadTimer = None
 
     currentSite = Site.query.filter(Site.site_pk == cookies["campus"]).first()
     currentCard = Card.query.filter(Card.card_no == cookies["cardNo"]).first()
@@ -208,6 +211,7 @@ def t1(message=None):
         numVisits=numVisits,
         lastVisitDate=lastVisitDate,
         memberships=memberships,
+        loadTimer=loadTimer,
     )
 
 
@@ -243,7 +247,7 @@ def userHasEntry():
     # passing it back, so that we can safely check on
     # the next page without recycling them.
 
-    apiResponse = make_response(redirect(url_for("t1")))
+    apiResponse = make_response(redirect(url_for("t1", loadTimer=5000)))
 
     # get us the site pk
     campus = None
@@ -256,25 +260,20 @@ def userHasEntry():
     cardNo = str(int(str((request.form.to_dict())["cardNo"])))
     apiResponse.set_cookie("cardNo", cardNo)
 
-    userTemp = userExists(cardNo)  # user exists returns the user or False only.
-
-    # If the profile does not exist we make them one to keep track of them no matter what.
-    if userTemp == None:
-        userTemp = createShadowUserByCardNo(cardNo)
+    userTemp = userExists(cardNo)  # user exists returns the user or a new one.
 
     print(userTemp)
 
     if userIsAtSite(userTemp.rums_pk, currentSite.site_pk):
         print("User is currently signed in at the current site, signing out!")
         signUserOut(userTemp.rums_pk, currentSite.site_pk)
-        return redirect(url_for("signedOut"))
+        return render_template("signedout.html", prideMonth=True, loadTimer=5000)
 
     if currentSite.allow_entry_without_profile:
         print("user is allowed entry without profile.")
         # be sure to write
-        return render_template(
-            "signedIn.html", no_profile=True
-        )  # This is the simple access granted page that collects card / shadow profile otherwise and lets them in automatically.
+        return redirect(url_for("t1", no_profile=True, loadTimer=5000))
+    # This is the simple access granted page that collects card / shadow profile otherwise and lets them in automatically.
 
     else:
         print(
@@ -291,7 +290,7 @@ def userHasEntry():
             if userTemp.rutgers_active:
                 print("User is active Rutgers, allowing entry.")
                 createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 1)
-                return apiResponse
+                return redirect(url_for("t1", loadTimer=5000))
 
             if not userTemp.rutgers_active:
                 print("User is not active Rutgers, checking other rules.")
@@ -299,7 +298,7 @@ def userHasEntry():
                     print("Current site is Rutgers active only, denying entry.")
                     createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 0)
                     return render_template(
-                        "access_denied.html", deniedType="nonRutgers"
+                        "access_denied.html", deniedType="nonRutgers", loadTimer=5000
                     )
                 if not currentSite.rutgers_active_only:
                     print("Site is open to non-Rutgers active with membership!")
@@ -312,7 +311,7 @@ def userHasEntry():
                         print("No valid membership, denied, expired.")
                         createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 0)
                         return render_template(
-                            "access_denied.html", deniedType="expired"
+                            "access_denied.html", deniedType="expired", loadTimer=5000
                         )
 
             # check normal rutgers decision flow.
@@ -339,8 +338,6 @@ def firstVisit():
     if request.method == "POST":
         data = request.form.to_dict()
         cookies = request.cookies.to_dict()
-
-        print(cookies)
 
         tempUser = userExists(cookies["cardNo"])
 

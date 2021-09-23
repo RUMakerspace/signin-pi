@@ -10,6 +10,15 @@
 
 <body>
 <header>
+<!--{{loadTimer}}-->
+{% if loadTimer %}
+<script>
+
+let myGreeting = setTimeout(() => {
+  window.location.href="/";
+}, {{loadTimer}});
+</script>
+{% endif %}
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" {% if prideMonth %}style="
 	background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet, red);
 "{% endif %}>
