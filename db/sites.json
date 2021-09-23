@@ -1,0 +1,17 @@
+[
+    {
+        "short": "livi",
+        "full_name": "Livingston",
+        "rutgers_only": 1
+    },
+    {
+        "short": "cook",
+        "full_name": "Cook Campus",
+        "rutgers_only": 0
+    },
+    {
+        "short": "hc",
+        "full_name": "Honors College",
+        "rutgers_only": 1
+    }
+]

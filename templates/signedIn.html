@@ -15,6 +15,14 @@ let myGreeting = setTimeout(() => {
 	</div>
 	<div class="row py-lg-1">
       <div class="col mx-auto">
+	  {% if no_profile %} 
+	  
+	  <h3>Your card has been collected.</h3>
+	  <h3>At a subsequent visit we'll ask you to create your profile.</h3>
+	  
+	  <h4><b>Be sure to sign out when you leave! (just tap your card again)</b></h4>
+	  {% endif %}
+	  {% if user %}
         <h3>Name: <b>{{ user.name }}</b></h3>
 		{% if user.pronouns %}</h4>({{user.pronouns}})</h4>{% endif %}
 		{% if user.netid %}
@@ -34,6 +42,7 @@ let myGreeting = setTimeout(() => {
 		<hr>
 		<p>Membership expires <b>Never</b></p>
       </div>
+	  {% endif %}
     </div>
 {% endblock %}
 

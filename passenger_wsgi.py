@@ -46,12 +46,44 @@ from helpers.membership import allowEntry
 from helpers.membership import getAllMemberships
 
 
+# This sets up our ability to query the database in this class, and also creates the
+# database tables we need to represent our membership objects, sites, etc.
 application.app_context().push()
 db.init_app(application)
 db.create_all()
 
+from model.datastore import (
+    Site,
+    Card,
+    User,
+    Visit,
+    SoloMembership,
+    GroupMembership,
+    GroupMember,
+)
+
+# This config is simply used to represent our initial site configuration
+# for repeatedly creating new simulated setups for mocking ig?
+import json
+
+config_sites = json.loads(open("./db/sites.json", "r").read())
 # Datastore stuff
 
+# This builds the default sites from the config file to avoid errors
+# on the front-page.  Additional sites may be added temporarily.
+
+for site in config_sites:
+    try:
+        tempSite = Site(
+            site_name=site["full_name"],
+            short_name=site["short"],
+            rutgers_active_only=site["rutgers_only"],
+            allow_entry_without_profile=0,
+        )
+        db.session.add(tempSite)
+        db.session.commit()
+    except:
+        pass
 
 ### LOGIN MANAGER
 login_manager = flask_login.LoginManager()
@@ -115,20 +147,12 @@ def logout():
     return redirect(url_for("indexPage"))
 
 
-from model.datastore import (
-    Site,
-    Card,
-    User,
-    Visit,
-    SoloMembership,
-    GroupMembership,
-    GroupMember,
-)
-
-
 @application.route("/")
 def indexPage():
     campusID = int(request.cookies.to_dict()["campus"])
+
+    if "campus" not in request.cookies.to_dict():
+        return "Campus not set, log in to admin page to set please."
 
     print("Campus ID\t{}".format(campusID))
 
@@ -137,9 +161,13 @@ def indexPage():
     xg = make_response(
         render_template("visitor_signin.html", siteName=campusName, prideMonth=True)
     )
-    if "campus" not in request.cookies.to_dict():
-        return "Campus not set, log in to admin page to set please."
+
     return xg
+
+
+@application.route("/simpleGrantedPage")
+def simpleGranted():
+    return render_template("signedIn.html")
 
 
 @application.route("/entryGranter")
@@ -159,7 +187,10 @@ def t1(message=None):
     ).order_by(Visit.entry_time.desc())
 
     numVisits = currentUserVisits.count()
-    lastVisitDate = currentUserVisits.first().entry_time.strftime("%Y/%m/%d")
+    lastVisitDate = currentUserVisits.one_or_none()
+
+    if lastVisitDate != None:
+        lastVisitDate = lastVisitDate.entry_time.strftime("%Y/%m/%d")
 
     print("current user")
     print(currentUser)
@@ -182,6 +213,8 @@ def t1(message=None):
 
 @application.route("/denied")
 def deniedAccess():
+
+    # cardNotFound, expired
     return render_template(
         "access_denied.html", prideMonth=True, deniedType="cardNotFound"
     )
@@ -192,6 +225,8 @@ def deniedAccess():
 # This allows us to have "shadow profiles" until it's time to set
 # them up and guarantees we can maintain the one-to-many of users to
 # cards.
+
+from helpers.user import createShadowUserByCardNo, userExists
 
 
 @application.route("/api/checkSignin", methods=["POST"])
@@ -214,28 +249,33 @@ def userHasEntry():
     cardNo = str(int(str((request.form.to_dict())["cardNo"])))
     apiResponse.set_cookie("cardNo", cardNo)
 
-    matchCards = Card.query.filter_by(card_no=cardNo)
+    userTemp = userExists(cardNo)  # user exists returns the user or False only.
 
-    # If the card does not exist in the database, add it.
-    if matchCards.count() == 0:
-        tempCard = Card(card_no=cardNo)
-        db.session.add(tempCard)
-        db.session.commit()
-        print("added card {}".format(cardNo))
-        # Reload our reference in case the above changed it.
-        matchCards = Card.query.filter_by(card_no=cardNo)
+    # If the profile does not exist we make them one to keep track of them no matter what.
+    if userTemp == None:
+        userTemp = createShadowUserByCardNo(cardNo)
 
-    if matchCards.count() != 0:
-        print(list(matchCards))
+    print(userTemp)
 
     if currentSite.allow_entry_without_profile:
-        return t1(
-            "We've collected your card number for now; we can re-associate it with your profile at a later date."
-        )  # if the user can enter as-is we collect their card number and say granted.  Otherwise we fill it out.
+        print("user is allowed entry without profile.")
+        # be sure to write
+        return render_template(
+            "signedIn.html", no_profile=True
+        )  # This is the simple access granted page that collects card / shadow profile otherwise and lets them in automatically.
+
     else:
-        firstVisitResp = make_response(redirect(url_for("firstVisit")))
-        firstVisitResp.set_cookie("cardNo", cardNo)
-        return firstVisitResp
+        print(
+            "User is not allowed entry without profile, must sign in or be verified normally."
+        )
+        if userTemp.shadow_profile:
+            print("User currently has shadow profile, gotta deal with that.")
+            return redirect(url_for("firstVisit"))
+        else:
+            print("User has a real profile, check full auth flow shit.")
+            return ""
+            # check normal rutgers decision flow.
+    print("We should not be here.")
 
     return apiResponse
 
@@ -261,13 +301,17 @@ def firstVisit():
 
         print(cookies)
 
-        tempUser = User(
-            email=data["inputRUEmail"],
-            netid=data["inputNetID"],
-            name=data["inputName"],
-            rutgers_active=1,
-        )
-        db.session.add(tempUser)
+        tempUser = userExists(cookies["cardNo"])
+
+        tempUser.email = data["inputRUEmail"]
+        tempUser.netid = data["inputNetID"]
+        tempUser.name = data["inputName"]
+        tempUser.rutgers_active = 1
+        tempUser.shadow_profile = 0  # This is so they don't have to do it again.
+
+        # TODO:
+        # If user has NetID, set rutgers active against Rutgers NetID, if they selected last items don't.
+        # Also TODO add visit.
         db.session.commit()
 
         return redirect(url_for("t1"))
@@ -309,19 +353,7 @@ def admPage():
 @application.route("/testquery")
 def testquery():
 
-    currentSite = Site.query.filter_by(site_pk=1).first()
-    currentUser = User.query.filter_by(rums_pk=1).first()
-    currentGroupMembership = GroupMembership.query.get(1)
-
-    # th = Visit(rums_pk=1, card_pk=1, site_pk=1, entry_time=datetime.utcnow(), granted=1)
-    # db.session.add(th)
-    # db.session.commit()
-
-    # gq = GroupMembership(site_pk=currentSite.site_pk, admin_user = currentUser.rums_pk, human_name="Test Group Membership", start_date = datetime.utcnow())
-
-    # gq = GroupMember(rums_pk=currentUser.rums_pk, group_membership_pk = currentGroupMembership.membership_pk)
-    # db.session.add(gq)
-    # db.session.commit()
+    # createShadowUserByCardNo(2188119300)
 
     # if allowEntry(1, 1):
     #    return "yer in bitch"

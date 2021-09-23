@@ -17,7 +17,7 @@ class Card(db.Model):
     card_pk = db.Column(db.Integer, primary_key=True)
     card_no = db.Column(db.String(20), unique=True, nullable=False)
     zk_pk = db.Column(db.Integer, nullable=True)
-    rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
+    rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=False)
 
     def __repr__(self):
         return "<Card {} {}>".format(self.card_pk, self.card_no)
@@ -26,11 +26,12 @@ class Card(db.Model):
 class User(db.Model):
     rums_pk = db.Column(db.Integer, primary_key=True)
     netid = db.Column(db.String(20), unique=True, nullable=True)
-    email = db.Column(db.String(50), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(50), nullable=True)
+    name = db.Column(db.String(100), nullable=True)
     picture = db.Column(db.LargeBinary, nullable=True)
     pronouns = db.Column(db.String(20), nullable=True)
-    rutgers_active = db.Column(db.Boolean, nullable=False)
+    rutgers_active = db.Column(db.Boolean, nullable=True)
+    shadow_profile = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return "<User pk:{} email:{} name:{} pronouns:{}>".format(
@@ -59,7 +60,9 @@ class Visit(db.Model):
 class Site(db.Model):
     site_pk = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(20), nullable=False)
-    short_name = db.Column(db.String(20), nullable=False)
+    short_name = db.Column(
+        db.String(20), unique=True, nullable=False
+    )  # This is unique for our admin interface to click stuff.
     allow_entry_without_profile = db.Column(db.Boolean, nullable=False, default=False)
     rutgers_active_only = db.Column(db.Boolean, nullable=False, default=False)
     # Allow_entry_w.o_profile is used to track site-specific sign-in where their visit
