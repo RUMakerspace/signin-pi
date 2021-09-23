@@ -12,9 +12,21 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 
-def createVisit(rums_pk, card_pk, site_pk, granted):
+def createVisit(rums_pk, card_no, site_pk, granted):
+
+    # Catchall before to sign out the signed in.
+    if userIsAtSite(rums_pk, site_pk):
+        return signUserOut(rums_pk, site_pk)
+
+    if Card.query.filter(Card.card_no == card_no).count() > 0:
+        tempCard = Card.query.filter(Card.card_no == card_no).first()
+    else:
+        tempCard = Card(rums_pk=rums_pk, card_no=card_no)
+        db.session.add(tempCard)
+        db.session.commit()
+
     tempVisit = Visit(
-        rums_pk=rums_pk, card_pk=card_pk, site_pk=site_pk, granted=granted
+        rums_pk=rums_pk, card_pk=tempCard.card_pk, site_pk=site_pk, granted=granted
     )
     tempVisit.entry_time = datetime.utcnow()
 
@@ -32,10 +44,16 @@ def createVisit(rums_pk, card_pk, site_pk, granted):
 # people out without any of the other fancy stuff for sign-in.
 def userIsAtSite(rums_pk, site_pk):
     visits = Visit.query.filter(
-        (Visit.rums_pk == rums_pk)
-        and (Visit.site_pk == site_pk)
-        and (exit_time is None)
+        (
+            (Visit.rums_pk == rums_pk)
+            & (Visit.site_pk == site_pk)
+            & (Visit.exit_time == None)
+        )
     )
+    print(visits)
+
+    for v in visits:
+        print(v)
 
     if visits.count() > 0:
         return True
@@ -45,8 +63,8 @@ def userIsAtSite(rums_pk, site_pk):
 def signUserOut(rums_pk, site_pk):
     visits = Visit.query.filter(
         (Visit.rums_pk == rums_pk)
-        and (Visit.site_pk == site_pk)
-        and (exit_time is None)
+        & (Visit.site_pk == site_pk)
+        & (Visit.exit_time == None)
     )
 
     currentVisit = visits.first()
@@ -56,3 +74,5 @@ def signUserOut(rums_pk, site_pk):
 
     currentVisit.exit_time = datetime.utcnow()
     db.session.commit()
+
+    return currentVisit

@@ -51,8 +51,8 @@ class Visit(db.Model):
     granted = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return "<Visit {} {} {} {}>".format(
-            self.visit_pk, self.card_no, self.entry_time, self.granted
+        return "<Visit {} {} {} {} SIGNED OUT:{}>".format(
+            self.visit_pk, self.card_pk, self.entry_time, self.granted, self.exit_time
         )
 
 

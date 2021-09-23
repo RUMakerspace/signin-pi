@@ -16,7 +16,11 @@ def userExists(cardNo):
     currentCard = Card.query.filter(Card.card_no == cardNo)
 
     if currentCard.count() == 0:
-        return False
+        q = createShadowUserByCardNo(cardNo)
+        db.session.add(q)
+        db.session.commit()
+
+        return q
 
     if currentCard.first().rums_pk != None:
         currentUser = User.query.filter(

@@ -14,6 +14,9 @@
 	  {% if deniedType == "expired" %}
 	  <h2 class="fw-light">Unfortunately this membership is expired.  Please talk to one of our staff members to get your membership renewed.</h2>
 	  {% endif %}
+	  {% if deniedType == "nonRutgers" %}
+	  <h2 class="fw-light">Unfortunately this facility is only open to active Rutgers Community members.  Please speak to our staff for more information.</h2>
+	  {% endif %}
 	</div>
 {% endblock %}
 

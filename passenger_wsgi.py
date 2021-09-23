@@ -187,7 +187,7 @@ def t1(message=None):
     ).order_by(Visit.entry_time.desc())
 
     numVisits = currentUserVisits.count()
-    lastVisitDate = currentUserVisits.one_or_none()
+    lastVisitDate = currentUserVisits.first()
 
     if lastVisitDate != None:
         lastVisitDate = lastVisitDate.entry_time.strftime("%Y/%m/%d")
@@ -227,6 +227,13 @@ def deniedAccess():
 # cards.
 
 from helpers.user import createShadowUserByCardNo, userExists
+from helpers.visit import createVisit, userIsAtSite, signUserOut
+from helpers.membership import hasValidMembership
+
+
+@application.route("/signedOut")
+def signedOut():
+    return render_template("signedOut.html")
 
 
 @application.route("/api/checkSignin", methods=["POST"])
@@ -257,6 +264,11 @@ def userHasEntry():
 
     print(userTemp)
 
+    if userIsAtSite(userTemp.rums_pk, currentSite.site_pk):
+        print("User is currently signed in at the current site, signing out!")
+        signUserOut(userTemp.rums_pk, currentSite.site_pk)
+        return redirect(url_for("signedOut"))
+
     if currentSite.allow_entry_without_profile:
         print("user is allowed entry without profile.")
         # be sure to write
@@ -268,12 +280,41 @@ def userHasEntry():
         print(
             "User is not allowed entry without profile, must sign in or be verified normally."
         )
-        if userTemp.shadow_profile:
+        if userTemp.shadow_profile:  # shadow profile catchall.
             print("User currently has shadow profile, gotta deal with that.")
-            return redirect(url_for("firstVisit"))
-        else:
+            tempRedir = make_response(redirect(url_for("firstVisit")))
+            tempRedir.set_cookie("cardNo", cardNo)
+            return tempRedir
+
+        else:  # not a ahadow profile, normal auth flow.
             print("User has a real profile, check full auth flow shit.")
-            return ""
+            if userTemp.rutgers_active:
+                print("User is active Rutgers, allowing entry.")
+                createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 1)
+                return apiResponse
+
+            if not userTemp.rutgers_active:
+                print("User is not active Rutgers, checking other rules.")
+                if currentSite.rutgers_active_only:
+                    print("Current site is Rutgers active only, denying entry.")
+                    createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 0)
+                    return render_template(
+                        "access_denied.html", deniedType="nonRutgers"
+                    )
+                if not currentSite.rutgers_active_only:
+                    print("Site is open to non-Rutgers active with membership!")
+                    hasValidMem = hasValidMembership(userTemp, currentSite)
+                    if hasValidMem:  # they can enter.
+                        print("Has a presently valid membership, granting access.")
+                        createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 1)
+                        return apiResponse
+                    else:
+                        print("No valid membership, denied, expired.")
+                        createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 0)
+                        return render_template(
+                            "access_denied.html", deniedType="expired"
+                        )
+
             # check normal rutgers decision flow.
     print("We should not be here.")
 
@@ -353,6 +394,7 @@ def admPage():
 @application.route("/testquery")
 def testquery():
 
+    return str(userIsAtSite(1, 1))
     # createShadowUserByCardNo(2188119300)
 
     # if allowEntry(1, 1):
