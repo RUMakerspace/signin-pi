@@ -288,6 +288,7 @@ def userHasEntry():
         print(
             "User is not allowed entry without profile, must sign in or be verified normally."
         )
+
         if userTemp.shadow_profile:  # shadow profile catchall.
             print("User currently has shadow profile, gotta deal with that.")
             tempRedir = make_response(redirect(url_for("firstVisit", cardNo=cardNo)))
@@ -346,6 +347,8 @@ def firstVisit():
     if request.method == "POST":
         data = request.form.to_dict()
 
+        print(data)
+
         try:
             cardNo = data["cardNo"]
         except:
@@ -364,7 +367,7 @@ def firstVisit():
         # Also TODO add visit.
         db.session.commit()
 
-        return redirect(url_for("mainEntryGranter", loadTimer=5000, cardNo=cardNo))
+        return redirect(url_for("mainEntryGranter", cardNo=cardNo))
 
     else:
         return render_template(
@@ -403,12 +406,8 @@ def admPage():
 
 
 @application.route("/testquery")
-def testquery():
+def tq():
+    curUser = User.query.filter(User.rums_pk == 2).first()
+    curSite = Site.query.filter(Site.site_pk == 2).first()
 
-    return str(userIsAtSite(1, 1))
-    # createShadowUserByCardNo(2188119300)
-
-    # if allowEntry(1, 1):
-    #    return "yer in bitch"
-
-    return "no"
+    return str(hasValidMembership(curUser, curSite))
