@@ -171,15 +171,19 @@ def simpleGranted():
 
 
 @application.route("/entryGranter")
-def t1(message=None):
+def mainEntryGranter(message=None):
 
     if "loadTimer" in (request.args.to_dict()):
         loadTimer = request.args.to_dict()["loadTimer"]
     else:
         loadTimer = None
 
+    cookies = request.cookies.to_dict()
+
     currentSite = Site.query.filter(Site.site_pk == cookies["campus"]).first()
-    currentCard = Card.query.filter(Card.card_no == cookies["cardNo"]).first()
+    currentCard = Card.query.filter(
+        Card.card_no == request.args.to_dict()["cardNo"]
+    ).first()
     currentUser = None
 
     if currentCard.rums_pk != None:
@@ -200,8 +204,7 @@ def t1(message=None):
     print(cookies)
 
     memberships = getAllMemberships(currentUser.rums_pk)
-    pageData = {}
-    # pageData should contain their name, their NetID, their 'division', and their membership types.
+
     return render_template(
         "signedIn.html",
         prideMonth=True,
@@ -235,6 +238,11 @@ from helpers.visit import createVisit, userIsAtSite, signUserOut
 from helpers.membership import hasValidMembership
 
 
+@application.route("/error")
+def error():
+    return render_template("error.html")
+
+
 @application.route("/signedOut")
 def signedOut():
     return render_template("signedOut.html")
@@ -247,8 +255,6 @@ def userHasEntry():
     # passing it back, so that we can safely check on
     # the next page without recycling them.
 
-    apiResponse = make_response(redirect(url_for("t1", loadTimer=5000)))
-
     # get us the site pk
     campus = None
     if "campus" in request.cookies.to_dict():
@@ -258,7 +264,10 @@ def userHasEntry():
 
     # Forcibly converting to/from gets us
     cardNo = str(int(str((request.form.to_dict())["cardNo"])))
-    apiResponse.set_cookie("cardNo", cardNo)
+
+    apiResponse = make_response(
+        redirect(url_for("mainEntryGranter", loadTimer=5000, cardNo=cardNo))
+    )
 
     userTemp = userExists(cardNo)  # user exists returns the user or a new one.
 
@@ -272,7 +281,7 @@ def userHasEntry():
     if currentSite.allow_entry_without_profile:
         print("user is allowed entry without profile.")
         # be sure to write
-        return redirect(url_for("t1", no_profile=True, loadTimer=5000))
+        return redirect(url_for("mainEntryGranter", no_profile=True, loadTimer=5000))
     # This is the simple access granted page that collects card / shadow profile otherwise and lets them in automatically.
 
     else:
@@ -281,8 +290,7 @@ def userHasEntry():
         )
         if userTemp.shadow_profile:  # shadow profile catchall.
             print("User currently has shadow profile, gotta deal with that.")
-            tempRedir = make_response(redirect(url_for("firstVisit")))
-            tempRedir.set_cookie("cardNo", cardNo)
+            tempRedir = make_response(redirect(url_for("firstVisit", cardNo=cardNo)))
             return tempRedir
 
         else:  # not a ahadow profile, normal auth flow.
@@ -290,7 +298,7 @@ def userHasEntry():
             if userTemp.rutgers_active:
                 print("User is active Rutgers, allowing entry.")
                 createVisit(userTemp.rums_pk, cardNo, currentSite.site_pk, 1)
-                return redirect(url_for("t1", loadTimer=5000))
+                return apiResponse
 
             if not userTemp.rutgers_active:
                 print("User is not active Rutgers, checking other rules.")
@@ -317,7 +325,7 @@ def userHasEntry():
             # check normal rutgers decision flow.
     print("We should not be here.")
 
-    return apiResponse
+    return redirect(url_for("deniedAccess"))
 
 
 @application.route("/api/setCampus/<campusShort>", methods=["GET"])
@@ -337,9 +345,13 @@ def apiSetCampus(campusShort):
 def firstVisit():
     if request.method == "POST":
         data = request.form.to_dict()
-        cookies = request.cookies.to_dict()
 
-        tempUser = userExists(cookies["cardNo"])
+        try:
+            cardNo = data["cardNo"]
+        except:
+            redirect(url_for("error", loadTimer=5000))
+
+        tempUser = userExists(cardNo)
 
         tempUser.email = data["inputRUEmail"]
         tempUser.netid = data["inputNetID"]
@@ -352,10 +364,12 @@ def firstVisit():
         # Also TODO add visit.
         db.session.commit()
 
-        return redirect(url_for("t1"))
+        return redirect(url_for("mainEntryGranter", loadTimer=5000, cardNo=cardNo))
 
     else:
-        return render_template("firstvisit.html", prideMonth=True)
+        return render_template(
+            "firstvisit.html", prideMonth=True, cardNo=request.args.to_dict()["cardNo"]
+        )
 
     # return render_template("firstvisit.html", prideMonth=True)
 

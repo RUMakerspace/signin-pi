@@ -9,7 +9,9 @@
 		
 		<div class=form-group">
 		
-	  
+	  {% if cardNo %}
+	  <input hidden name="cardNo" value="{{cardNo}}">
+	  {% endif %}
 	  
 		  <label for="inputRUEmail">Rutgers Email</label>
 		  <input type="email" class="form-control" name="inputRUEmail" id="inputRUEmail" placeholder='Like "jsmith123@scarletmail.rutgers.edu"' required>
