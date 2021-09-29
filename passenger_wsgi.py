@@ -333,6 +333,7 @@ def userHasEntry():
 
 
 @application.route("/api/setCampus/<campusShort>", methods=["GET"])
+@login_required
 def apiSetCampus(campusShort):
 
     xg = make_response(redirect(url_for("indexPage")))
@@ -390,7 +391,23 @@ def admPage():
     print(request.cookies.to_dict())
 
     campuses = Site.query.all()
-    visits = Visit.query.join(User, Visit.rums_pk == User.rums_pk).limit(20).all()
+    visits = (
+        Visit.query.join(User, Visit.rums_pk == User.rums_pk)
+        .join(Site, Visit.site_pk == Site.site_pk)
+        .add_columns(
+            User.name,
+            User.pronouns,
+            User.netid,
+            User.email,
+            Visit.exit_time,
+            Visit.entry_time,
+            Visit.granted,
+            Site.short_name,
+        )
+        .order_by(Visit.entry_time.desc())
+        .limit(20)
+        .all()
+    )
 
     solomemberships = SoloMembership.query.limit(20).all()
     groupmem = (
@@ -412,9 +429,13 @@ def admPage():
     )
 
 
-@application.route("/testquery")
-def tq():
-    curUser = User.query.filter(User.rums_pk == 2).first()
-    curSite = Site.query.filter(Site.site_pk == 2).first()
+from helpers.visit import signOutAllUsers
 
-    return str(hasValidMembership(curUser, curSite))
+
+@application.route("/api/signOutCampusUsers/<site>")
+@login_required
+def signOutCampusUsers(site):
+
+    signOutAllUsers(site)
+
+    return redirect(url_for("admPage"))

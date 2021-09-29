@@ -76,3 +76,13 @@ def signUserOut(rums_pk, site_pk):
     db.session.commit()
 
     return currentVisit
+
+
+def signOutAllUsers(site_pk):
+    visits = Visit.query.filter((Visit.site_pk == site_pk) & (Visit.exit_time == None))
+
+    for v in visits:
+        v.exit_time = datetime.utcnow()
+    db.session.commit()
+
+    return True

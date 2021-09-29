@@ -10,7 +10,8 @@
 	
 	           <div class="row"> 
 		   <div class="col">
-       <ul><p>set campus: </p>{% for campus in campuses %}<li><a href="/api/setCampus/{{ campus.short_name }}">{{ campus.short_name }}</a></li> {% endfor %}</ul>
+       <p>set campus: {% for campus in campuses %}<a href="/api/setCampus/{{ campus.short_name }}">{{ campus.short_name }}</a> {% endfor %}</p>
+	   <p>sign all users out of site: {% for campus in campuses %}<a href="/api/signOutCampusUsers/{{ campus.site_pk }}">{{ campus.short_name }}</a> {% endfor %}</p>
       </div>
 	  </div>
 	
@@ -34,6 +35,7 @@
   <table class="table table-responsive">
   <thead>
     <tr>
+	  <th scope="col">Site</th>
       <th scope="col">Name</th>
       <th scope="col">NetID</th>
       <th scope="col">Email</th>
@@ -45,12 +47,13 @@
   <tbody>
 {% for visit in visits %}
     <tr>
-      <td>{{ visit[0] }}</td>
-      <td>{{ visit[1] }}</td>
-      <td>{{ visit[2]}}</td>
-	  <td> {{visit[3] }}</td>
-	  <td> {{visit[4] }}</td>
-	  <td {% if visit[5] == 1 %} class="table-success"{%endif%}>{% if visit[5] == 1 %}Yes {% else %} No {% endif %}</td>
+	  <td>{{visit.short_name}}</td>
+      <td>{{ visit.name }}</td>
+      <td>{{ visit.netid }}</td>
+      <td>{{ visit.email }}</td>
+	  <td> {{visit.entry_time }}</td>
+	  <td> {{visit.exit_time}}</td>
+	  <td> {{ visit.granted }}</td>
     </tr>
    {% endfor %}
 

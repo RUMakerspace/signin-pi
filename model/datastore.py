@@ -32,6 +32,7 @@ class User(db.Model):
     pronouns = db.Column(db.String(20), nullable=True)
     rutgers_active = db.Column(db.Boolean, nullable=True)
     shadow_profile = db.Column(db.Boolean, nullable=False)
+    rutgers_verified = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return "<User pk:{} email:{} name:{} pronouns:{}>".format(
