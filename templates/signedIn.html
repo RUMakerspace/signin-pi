@@ -31,8 +31,14 @@
 		{% for m in memberships %}
 		<p>{{m.name}}<br>({{m.start}}) ⇒ ({{m.end}})</p>
 		{% endfor %}
+		
+		{% if memberships|length == 0 %}
+		<p><i>no memberships</i></p>
+		{% endif %}
 		<hr>
-		<p>Membership expires <b>Never</b></p>
+		{% if membershipExpiryDate %}
+		<p>Membership expires <b>{{ membershipExpiryDate }}</b></p>
+		{% endif %}
       </div>
 	  {% endif %}
     </div>

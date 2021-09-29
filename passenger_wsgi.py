@@ -359,6 +359,10 @@ def firstVisit():
         tempUser.email = data["inputRUEmail"]
         tempUser.netid = data["inputNetID"]
         tempUser.name = data["inputName"]
+
+        if "inputOtherPronouns" in data:
+            tempUser.pronouns = data["inputOtherPronouns"]
+
         tempUser.rutgers_active = 1
         tempUser.shadow_profile = 0  # This is so they don't have to do it again.
 
