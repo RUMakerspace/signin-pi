@@ -248,7 +248,7 @@ def signedOut():
     return render_template("signedOut.html")
 
 
-@application.route("/api/checkSignin", methods=["POST"])
+@application.route("/api/checkSignin", methods=["POST", "GET"])
 def userHasEntry():
 
     # The response is to set the appropriate cookies for
@@ -263,7 +263,10 @@ def userHasEntry():
     currentSite = Site.query.filter_by(site_pk=campus).first()
 
     # Forcibly converting to/from gets us
-    cardNo = str(int(str((request.form.to_dict())["cardNo"])))
+    if "cardNo" in request.form.to_dict():
+        cardNo = str(int(str((request.form.to_dict())["cardNo"])))
+    if "cardNo" in request.args.to_dict():
+        cardNo = str(int(str((request.args.to_dict())["cardNo"])))
 
     apiResponse = make_response(
         redirect(url_for("mainEntryGranter", loadTimer=5000, cardNo=cardNo))
@@ -371,7 +374,7 @@ def firstVisit():
         # Also TODO add visit.
         db.session.commit()
 
-        return redirect(url_for("mainEntryGranter", cardNo=cardNo))
+        return redirect(url_for("userHasEntry", cardNo=cardNo))
 
     else:
         return render_template(
