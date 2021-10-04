@@ -20,6 +20,9 @@
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits" type="button" role="tab" aria-controls="visits" aria-selected="true">Visits</button>
   </li>
+    <li class="nav-item" role="presentation">
+    <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Users</button>
+  </li>
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="memberships-tab" data-bs-toggle="tab" data-bs-target="#memberships" type="button" role="tab" aria-controls="memberships" aria-selected="false">Memberships</button>
   </li>
@@ -30,6 +33,8 @@
     <button class="nav-link" id="query-tab" data-bs-toggle="tab" data-bs-target="#query" type="button" role="tab" aria-controls="query" aria-selected="false">Query User</button>
   </li>
 </ul>
+
+
 <div class="tab-content" id="myTabContent">
   <div class="tab-pane fade show active" id="visits" role="tabpanel" aria-labelledby="visits-tab">
   <table class="table table-responsive">
@@ -59,11 +64,14 @@
 
   </tbody>
 </table>
-  
-  
-  
-  
   </div>
+  
+  
+  <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+  <p> Users</p>
+  </div>
+  
+  
   <div class="tab-pane fade" id="memberships" role="tabpanel" aria-labelledby="memberships-tab">
     <table class="table table-responsive">
   <thead>
@@ -86,6 +94,7 @@
   {% endfor %}
   
   </tbody>
+  </table>
   
   </div>
   <div class="tab-pane fade" id="group-memberships" role="tabpanel" aria-labelledby="group-memberships-tab">group memberships</div>
