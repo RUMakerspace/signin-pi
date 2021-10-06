@@ -234,6 +234,7 @@ def deniedAccess():
 # cards.
 
 from helpers.user import createShadowUserByCardNo, userExists
+from helpers.user import setupUserExists
 from helpers.visit import createVisit, userIsAtSite, signUserOut
 from helpers.membership import hasValidMembership
 
@@ -363,26 +364,32 @@ def firstVisit():
         except:
             redirect(url_for("error", loadTimer=5000))
 
-        tempCard = Card.filter(Card.card_no == cardNo).all()
+        tempCard = Card.query.filter(Card.card_no == cardNo).first()
 
-        if tempCard.count() == 0:
-            print("Card not in use.")
-        tempUser = userExists(cardNo)
+        # TODO use setupUserExists and migrate most of this to helper functions.
 
-        tempUser.email = data["inputRUEmail"]
-        tempUser.netid = data["inputNetID"]
-        tempUser.name = data["inputName"]
+        qg = setupUserExists(email=data["inputRUEmail"], netid=data["inputNetID"])
+        if qg != None:
+            print("User exists with email and name, assigning card to them.")
+            tempCard.rums_pk = qg.rums_pk
+            db.session.commit()
 
-        if "inputOtherPronouns" in data:
-            tempUser.pronouns = data["inputOtherPronouns"]
+        else:
+            print("No user exists with current email or netID, new profile made.")
+            tempUser.email = data["inputRUEmail"]
+            tempUser.netid = data["inputNetID"]
+            tempUser.name = data["inputName"]
 
-        tempUser.rutgers_active = 1
-        tempUser.shadow_profile = 0  # This is so they don't have to do it again.
+            if "inputOtherPronouns" in data:
+                tempUser.pronouns = data["inputOtherPronouns"]
 
-        # TODO:
-        # If user has NetID, set rutgers active against Rutgers NetID, if they selected last items don't.
-        # Also TODO add visit.
-        db.session.commit()
+            tempUser.rutgers_active = 1
+            tempUser.shadow_profile = 0  # This is so they don't have to do it again.
+
+            # TODO:
+            # If user has NetID, set rutgers active against Rutgers NetID, if they selected last items don't.
+            # Also TODO add visit.
+            db.session.commit()
 
         return redirect(url_for("userHasEntry", cardNo=cardNo))
 
@@ -439,6 +446,14 @@ def admPage():
 
 
 from helpers.visit import signOutAllUsers
+
+
+@application.route("/testquery")
+def testqueryshit():
+    print(setupUserExists(email="me@hi-im.kim"))
+    print(setupUserExists(netid="kimchase"))
+    print(setupUserExists(email="scarter@docs.rutgers.edu"))
+    return "ha"
 
 
 @application.route("/api/signOutCampusUsers/<site>")
