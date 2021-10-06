@@ -346,6 +346,11 @@ def apiSetCampus(campusShort):
     return xg
 
 
+@application.errorhandler(500)
+def pageNotFound(error):
+    return redirect(url_for("error", loadTimer=5000))
+
+
 @application.route("/firstvisit", methods=["GET", "POST"])
 def firstVisit():
     if request.method == "POST":
@@ -358,6 +363,10 @@ def firstVisit():
         except:
             redirect(url_for("error", loadTimer=5000))
 
+        tempCard = Card.filter(Card.card_no == cardNo).all()
+
+        if tempCard.count() == 0:
+            print("Card not in use.")
         tempUser = userExists(cardNo)
 
         tempUser.email = data["inputRUEmail"]
