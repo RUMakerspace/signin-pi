@@ -367,7 +367,7 @@ def firstVisit():
             redirect(url_for("error", loadTimer=5000))
 
         tempCard = Card.query.filter(Card.card_no == cardNo).first()
-
+        tempUser = User.query.filter(User.rums_pk == tempCard.rums_pk).first()
         # TODO use setupUserExists and migrate most of this to helper functions.
 
         qg = setupUserExists(email=data["inputRUEmail"], netid=data["inputNetID"])
