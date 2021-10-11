@@ -85,6 +85,12 @@ for site in config_sites:
     except:
         pass
 
+
+@application.errorhandler(500)
+def pageNotFound(error):
+    return redirect(url_for("error", loadTimer=5000))
+
+
 ### LOGIN MANAGER
 login_manager = flask_login.LoginManager()
 login_manager.init_app(application)
@@ -347,11 +353,6 @@ def apiSetCampus(campusShort):
     return xg
 
 
-@application.errorhandler(500)
-def pageNotFound(error):
-    return redirect(url_for("error", loadTimer=5000))
-
-
 @application.route("/firstvisit", methods=["GET", "POST"])
 def firstVisit():
     if request.method == "POST":
@@ -445,15 +446,25 @@ def admPage():
     )
 
 
+@application.route("/admin/editUser")
+def editUser():
+
+    if "user_pk" not in request.args.to_dict():
+        return redirect(url_for("error", loadTimer=5000))
+    else:
+        user_pk = request.args.to_dict()["user_pk"]
+
+    whichUser = User.query.filter(User.rums_pk == user_pk).first()
+
+    visits = Visit.query.filter(Visit.rums_pk == user_pk).all()
+    cards = Card.query.filter(Card.rums_pk == user_pk).all()
+
+    return render_template(
+        "admin/edit_user.html", user=whichUser, visits=visits, cards=cards
+    )
+
+
 from helpers.visit import signOutAllUsers
-
-
-@application.route("/testquery")
-def testqueryshit():
-    print(setupUserExists(email="me@hi-im.kim"))
-    print(setupUserExists(netid="kimchase"))
-    print(setupUserExists(email="scarter@docs.rutgers.edu"))
-    return "ha"
 
 
 @application.route("/api/signOutCampusUsers/<site>")

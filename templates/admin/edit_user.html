@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="row py-lg-5">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <h1 class="fw-light">Edit User</h1>
+      </div>
+	</div>
+	<form action="post">
+	<div class="row py-lg-1">
+	<div class="col-lg-6 col-md-6">
+	
+	
+	 <label for="inputEmail">Email</label>
+		  <input type="email" class="form-control" name="inputRUEmail" id="inputRUEmail" value="{{user.email}}">
+		  
+		  <label for="inputNetID">NetID</label>
+		  <input type="text" class="form-control" name="inputNetID" id="inputNetID" value="{{user.netid}}">
+		  
+		  <label for="inputName">Name</label>
+		  <input type="text" class="form-control" name="inputName" id="inputName" value="{{user.name}}">
+		  
+	</div>
+	
+	<div class="col-lg-6 col-md-6">
+	 <label for="inputPronouns">Pronouns</label>
+		  <input type="text" class="form-control" name="inputPronouns" id="inputPronouns" value="{{user.pronouns}}">
+
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" id="rutgersActive" {% if user.rutgers_active %} value="on" {% endif %} >
+		<label class="form-check-label" for="rutgersActive">Rutgers Active (Current Student, Faculty, or Staff)</label>
+	</div>
+
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" id="rutgersVerified" {% if user.rutgers_verified %} value="on" {% endif %}>
+		<label class="form-check-label" for="rutgersVerified">Manually Verified User as Active Rutgers</label>
+	</div>
+		  
+	<hr> 
+	<div class="form-check form-switch">
+		<input class="form-check-input" type="checkbox" id="shadowProfile" {% if user.shadow_profile %} value="on" {% endif %} disabled>
+		<label class="form-check-label" for="shadowProfile">Shadow Profile</label>
+	</div>
+
+	</div>
+	
+	
+	
+    </div>
+		</form>
+		
+		<div class="row py-lg-1">
+		<hr>
+		</div>
+		
+			<div class="row py-lg-1">
+		<div class="col-lg-6 col-md-6">
+	<h4>Cards</h4>
+<ul class="list-group">
+{% for c in cards %}
+<li class="list-group-item">{{ c.card_no }} {% if c.zk_pk != None %}({{ c.zk_pk}}){% endif%}</li>
+{% endfor %}
+</ul>
+
+	</div>
+	
+			<div class="col-lg-6 col-md-6">
+	<h4>Visits</h4>
+<ul class="list-group">
+<li class="list-group-item d-flex justify-content-between align-items-center">Total Visits<span class="badge bg-primary rounded-pill">{{visits|length}}</span></li>
+
+{% for v in visits[:20] %}
+<li class="list-group-item">{{ v.entry_time.strftime("%a %b %d, %Y at %I:%M %p UTC") }} {% if v.exit_time != None %} (Duration: {{ (v.exit_time - v.entry_time) }}){% endif%} </li>
+{% endfor %}
+</ul>
+	</div>
+	</div>
+{% endblock %}
+
