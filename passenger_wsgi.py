@@ -16,6 +16,7 @@ from flask import (
     url_for,
     request,
     make_response,
+    flash,
 )
 import flask
 
@@ -446,8 +447,32 @@ def admPage():
     )
 
 
-@application.route("/admin/editUser")
+@application.route("/admin/editUser", methods=["GET", "POST"])
+@login_required
 def editUser():
+    if request.method == "POST":
+        newData = request.form.to_dict()
+        print(newData)
+        print(request.args.to_dict())
+
+        rums_pk = request.args.to_dict()["user_pk"]
+        currentUser = User.query.filter(User.rums_pk == rums_pk).first()
+
+        currentUser.email = newData["inputRUEmail"]
+        currentUser.name = newData["inputName"]
+        currentUser.pronouns = newData["inputPronouns"]
+        currentUser.netid = newData["inputNetID"]
+
+        currentUser.rutgersActive = False
+        if "rutgersActive" in newData:
+            currentUser.rutgers_active = True
+
+        currentUser.rutgersVerified = False
+        if "rutgersVerified" in newData:
+            currentUser.rutgers_verified = True
+
+        db.session.commit()
+        flash("User successfully edited.")
 
     if "user_pk" not in request.args.to_dict():
         return redirect(url_for("error", loadTimer=5000))
@@ -458,6 +483,8 @@ def editUser():
 
     visits = Visit.query.filter(Visit.rums_pk == user_pk).all()
     cards = Card.query.filter(Card.rums_pk == user_pk).all()
+
+    print(whichUser.shadow_profile)
 
     return render_template(
         "admin/edit_user.html", user=whichUser, visits=visits, cards=cards

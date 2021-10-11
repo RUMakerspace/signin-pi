@@ -46,8 +46,23 @@ let myGreeting = setTimeout(() => {
 
 <main>
 <section class="py-5 text-center container">
-<div class="col-lg-6 col-md-8 mx-auto">
+<div class="row">
+<div class="col-lg-12 col-md-12 mx-auto">
 <h1 class="fw-light"> <br> </h1>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="list-group">
+    {% for message in messages %}
+      <li class="list-group-item list-group-item-primary">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+
+</div>
 </div>
 
 {% block content %}

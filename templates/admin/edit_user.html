@@ -6,7 +6,7 @@
         <h1 class="fw-light">Edit User</h1>
       </div>
 	</div>
-	<form action="post">
+	<form method="post">
 	<div class="row py-lg-1">
 	<div class="col-lg-6 col-md-6">
 	
@@ -27,24 +27,29 @@
 		  <input type="text" class="form-control" name="inputPronouns" id="inputPronouns" value="{{user.pronouns}}">
 
 	<div class="form-check form-switch">
-		<input class="form-check-input" type="checkbox" id="rutgersActive" {% if user.rutgers_active %} value="on" {% endif %} >
+		<input class="form-check-input" type="checkbox" name="rutgersActive" id="rutgersActive" {% if user.rutgers_active %} checked {% endif %} >
 		<label class="form-check-label" for="rutgersActive">Rutgers Active (Current Student, Faculty, or Staff)</label>
 	</div>
 
 	<div class="form-check form-switch">
-		<input class="form-check-input" type="checkbox" id="rutgersVerified" {% if user.rutgers_verified %} value="on" {% endif %}>
+		<input class="form-check-input" type="checkbox" name="rutgersVerified" id="rutgersVerified" {% if user.rutgers_verified %} checked {% endif %}>
 		<label class="form-check-label" for="rutgersVerified">Manually Verified User as Active Rutgers</label>
 	</div>
 		  
 	<hr> 
+	<!-- This moves the shadow profile shown box thing to here.-->
 	<div class="form-check form-switch">
-		<input class="form-check-input" type="checkbox" id="shadowProfile" {% if user.shadow_profile %} value="on" {% endif %} disabled>
+		<input class="form-check-input" type="checkbox" name="shadowProfile" id="shadowProfile" {% if user.shadow_profile %} checked {% endif %} disabled>
 		<label class="form-check-label" for="shadowProfile">Shadow Profile</label>
 	</div>
 
 	</div>
 	
-	
+	<div class="row">
+		<div class="col col-lg-3 py-3">
+		<button type="submit" class="btn btn-primary w-100">Update User</button>
+		</div>
+	</div>
 	
     </div>
 		</form>
@@ -55,7 +60,7 @@
 		
 			<div class="row py-lg-1">
 		<div class="col-lg-6 col-md-6">
-	<h4>Cards</h4>
+	<h4>Card{% if cards|length > 1%}s{% endif%}</h4>
 <ul class="list-group">
 {% for c in cards %}
 <li class="list-group-item">{{ c.card_no }} {% if c.zk_pk != None %}({{ c.zk_pk}}){% endif%}</li>
