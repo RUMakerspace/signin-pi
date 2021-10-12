@@ -66,9 +66,22 @@
 </table>
   </div>
   
-  
-  <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
-  <p> Users</p>
+  <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+  <h3>Users</h3>
+  <div class="d-flex flex-wrap">
+  {% for u in users %}
+  <div class="p-2">
+  <div class="card" style="width: 18rem;">
+  <img src="" class="card-img-top" alt="">
+  <div class="card-body">
+    <h5 class="card-title">{{u.name}} {% if u.pronouns %}(<i>{{u.pronouns}}</i>){% endif %}</h5>
+    <p class="card-text">{{u.email}}</p>
+    <a href="editUser?user_pk={{u.rums_pk}}" class="btn btn-primary">Edit User</a>
+  </div>
+</div>
+  </div>
+  {% endfor %}
+</div>
   </div>
   
   
