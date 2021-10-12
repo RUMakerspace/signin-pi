@@ -437,7 +437,7 @@ def admPage():
         .limit(20)
         .all()
     )
-    
+
     users = User.query.filter(User.shadow_profile == 0).all()
 
     return render_template(
@@ -447,7 +447,7 @@ def admPage():
         visits=visits,
         group_memberships=groupmem,
         solo_memberships=solomemberships,
-        users=users
+        users=users,
     )
 
 
