@@ -414,6 +414,7 @@ def admPage():
         .join(Site, Visit.site_pk == Site.site_pk)
         .add_columns(
             User.name,
+            User.rums_pk,
             User.pronouns,
             User.netid,
             User.email,
@@ -438,7 +439,7 @@ def admPage():
     )
 
     return render_template(
-        "admin.html",
+        "admin/admin_main.html",
         prideMonth=True,
         campuses=campuses,
         visits=visits,
