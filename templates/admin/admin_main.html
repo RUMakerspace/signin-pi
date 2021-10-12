@@ -53,7 +53,7 @@
 {% for visit in visits %}
     <tr>
 	  <td>{{visit.short_name}}</td>
-      <td><a href="editUser?user_pk={{visit.rums_pk}}">{{ visit.name }}</a></td>
+      <td><a href="editUser?user_pk={{visit.rums_pk}}">{{ visit.name }} {% if visit.pronouns %}(<i>{{visit.pronouns}})</i>{%endif%}</a></td>
       <td>{{ visit.netid }}</td>
       <td>{{ visit.email }}</td>
 	  <td> {{visit.entry_time }}</td>
