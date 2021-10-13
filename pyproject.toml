@@ -11,6 +11,7 @@ flask-login = "^0.5.0"
 tinydb = "^4.3.0"
 Flask-Bcrypt = "^0.7.1"
 Flask-SQLAlchemy = "^2.5.1"
+Flask-APScheduler = "^1.12.2"
 
 [tool.poetry.dev-dependencies]
 

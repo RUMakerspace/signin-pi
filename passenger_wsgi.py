@@ -22,6 +22,8 @@ import flask
 
 # Flask SQLAlchemy shit.
 from flask_sqlalchemy import SQLAlchemy
+from flask_apscheduler import APScheduler  # for midnight job rollover shit.
+
 from datetime import datetime, timedelta
 
 # Flask Login
@@ -31,6 +33,26 @@ from flask_login import LoginManager, login_required, login_user, logout_user
 
 application = Flask(__name__)
 application.secret_key = open("supersecret.key").read()
+
+
+scheduler = APScheduler()
+scheduler.api_enabled = True  # may need to be disabled
+scheduler.init_app(application)
+
+
+@scheduler.task(
+    "cron", id="sign_off_forgotten_students", minute=0, hour=0, day="*", month="*"
+)
+def signOffForgottenMidnight():
+    # signOutCampusUsers
+
+    sites = Site.query.all()
+
+    for s in sites:
+        signOutCampusUsers(s.site_pk)
+        print("Signed users out of {}".format(s.site_name))
+    print("Signed off students who forgot to sign out.")
+
 
 application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./db/datastore_local.db"
 # We may change this to another app at some point, like MariaDB but for now, this is fine.
@@ -99,9 +121,10 @@ login_manager.init_app(application)
 # This function is just to set a session timer.
 @application.before_request
 def before_request():
-    flask.session.permanent = True
-    application.permanent_session_lifetime = timedelta(minutes=20)
-    flask.session.modified = True
+    # flask.session.permanent = True
+    # application.permanent_session_lifetime = timedelta(minutes=20)
+    # flask.session.modified = True
+    pass
 
 
 @login_manager.user_loader
@@ -504,6 +527,12 @@ def editUser():
 
 
 from helpers.visit import signOutAllUsers
+
+
+@application.route("/api/signOffForgottenMidnight")
+def terhjfiuf():
+    signOffForgottenMidnight()
+    return ""
 
 
 @application.route("/api/signOutCampusUsers/<site>")
