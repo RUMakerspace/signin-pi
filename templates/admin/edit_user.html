@@ -75,7 +75,7 @@
 <li class="list-group-item d-flex justify-content-between align-items-center">Total Visits<span class="badge bg-primary rounded-pill">{{visits|length}}</span></li>
 
 {% for v in visits[:20] %}
-<li class="list-group-item">{{ v.entry_time.strftime("%a %b %d, %Y at %I:%M %p UTC") }} {% if v.exit_time != None %} (Duration: {{ (v.exit_time - v.entry_time) }}){% endif%} </li>
+<li class="list-group-item">{{ convertTZ(v.entry_time).strftime("%a %b %d, %Y at %I:%M %p") }} {% if v.exit_time != None %} (Duration: {{ (v.exit_time - v.entry_time) }}){% endif%} </li>
 {% endfor %}
 </ul>
 	</div>

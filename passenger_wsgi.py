@@ -448,7 +448,11 @@ def admPage():
         group_memberships=groupmem,
         solo_memberships=solomemberships,
         users=users,
+        convertTZ=convertTZ,  # helper method to localize UTC timestamps.
     )
+
+
+from helpers.timezone import convertTZ
 
 
 @application.route("/admin/editUser", methods=["GET", "POST"])
@@ -491,7 +495,11 @@ def editUser():
     print(whichUser.shadow_profile)
 
     return render_template(
-        "admin/edit_user.html", user=whichUser, visits=visits, cards=cards
+        "admin/edit_user.html",
+        user=whichUser,
+        visits=visits,
+        cards=cards,
+        convertTZ=convertTZ,
     )
 
 

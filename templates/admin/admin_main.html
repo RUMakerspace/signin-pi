@@ -56,8 +56,8 @@
       <td><a href="editUser?user_pk={{visit.rums_pk}}">{{ visit.name }} {% if visit.pronouns %}(<i>{{visit.pronouns}})</i>{%endif%}</a></td>
       <td>{{ visit.netid }}</td>
       <td>{{ visit.email }}</td>
-	  <td> {{visit.entry_time }}</td>
-	  <td> {{visit.exit_time}}</td>
+	  <td> {{convertTZ(visit.entry_time).strftime("%a %b %d, %Y at %I:%M %p") }}</td>
+	  <td> {% if visit.exit_time != None %}{{convertTZ(visit.exit_time).strftime("%a %b %d, %Y at %I:%M %p")}}{% else %}None{% endif %}</td>
 	  <td> {{ visit.granted }}</td>
     </tr>
    {% endfor %}
