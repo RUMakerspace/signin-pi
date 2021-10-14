@@ -296,8 +296,6 @@ def userHasEntry():
     # Forcibly converting to/from gets us
     if "cardNo" in request.form.to_dict():
         cardNo = str(int(str((request.form.to_dict())["cardNo"])))
-    if "cardNo" in request.args.to_dict():
-        cardNo = str(int(str((request.args.to_dict())["cardNo"])))
 
     apiResponse = make_response(
         redirect(url_for("mainEntryGranter", loadTimer=5000, cardNo=cardNo))
