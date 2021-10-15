@@ -298,6 +298,9 @@ def userHasEntry():
     if "cardNo" in request.form.to_dict():
         cardNo = str(int(str((request.form.to_dict())["cardNo"])))
 
+    if "cardNo" in request.args.to_dict():
+        cardNo = str(int(str((request.args.to_dict())["cardNo"])))
+
     apiResponse = make_response(
         redirect(url_for("mainEntryGranter", loadTimer=5000, cardNo=cardNo))
     )
@@ -415,7 +418,7 @@ def firstVisit():
             # Also TODO add visit.
             db.session.commit()
 
-        return redirect(url_for("userHasEntry", cardNo=cardNo))
+        return redirect(url_for("userHasEntry", cardNo=tempCard.card_no))
 
     else:
         return render_template(
