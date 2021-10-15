@@ -54,12 +54,12 @@
 {% for visit in visits %}
     <tr>
 	  <td>{{visit.short_name}}</td>
-      <td><a href="editUser?user_pk={{visit.rums_pk}}">{{ visit.name }} {% if visit.pronouns %}(<i>{{visit.pronouns}})</i>{%endif%}</a></td>
+      <td>{{ visit.name }} {% if visit.pronouns %}(<i>{{visit.pronouns}})</i>{%endif%}</td>
       <td>{{ visit.netid }}</td>
       <td>{{ visit.email }}</td>
 	  <td> {{convertTZ(visit.entry_time).strftime("%a %b %d, %Y at %I:%M %p") }}</td>
 	  <td> {% if visit.exit_time != None %}{{convertTZ(visit.exit_time).strftime("%a %b %d, %Y at %I:%M %p")}}{% else %}None{% endif %}</td>
-	  <td> {{ visit.granted }}</td>
+	  <td><div {% if visit.granted %}class="table-success"{% endif %{>{{ visit.granted }}</td>
 	  <td>
 	  
 	  <div class="dropdown">
@@ -69,6 +69,8 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{visit.visit_pk}}">
     <li><a class="dropdown-item disabled" href="#">Remove Exit</a></li>
     <li><a class="dropdown-item" href="/api/deleteVisit/{{visit.visit_pk}}">Delete Visit</a></li>
+	<li><div class="dropdown-divider"></div></li>
+	<li><a class="dropdown-item" href="editUser?user_pk={{visit.rums_pk}}">Edit User</a></li>
   </ul>
 </div>
 	  
