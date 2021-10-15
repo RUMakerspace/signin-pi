@@ -38,6 +38,7 @@ application.secret_key = open("supersecret.key").read()
 scheduler = APScheduler()
 scheduler.api_enabled = True  # may need to be disabled
 scheduler.init_app(application)
+scheduler.start()
 
 
 @scheduler.task(
