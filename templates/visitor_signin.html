@@ -3,11 +3,12 @@
  
   <script>
   
-function tH(e) {
+function tH(e, qty) {
     //setCookie("cardNo",e.detail.scanCode, 1);
-	console.log(e)
+
 	post("/api/checkSignin", {'cardNo': e.detail.scanCode})
 	
+	onScan.detachFrom(document)
     return e.detail.code;
 }
 
