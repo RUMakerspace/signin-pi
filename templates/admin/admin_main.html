@@ -59,7 +59,7 @@
       <td>{{ visit.email }}</td>
 	  <td> {{convertTZ(visit.entry_time).strftime("%a %b %d, %Y at %I:%M %p") }}</td>
 	  <td> {% if visit.exit_time != None %}{{convertTZ(visit.exit_time).strftime("%a %b %d, %Y at %I:%M %p")}}{% else %}None{% endif %}</td>
-	  <td><div {% if visit.granted %}class="table-success"{% endif %{>{{ visit.granted }}</td>
+	  <td><div {% if visit.granted %}class="table-success"{% endif %}>{{ visit.granted }}</td>
 	  <td>
 	  
 	  <div class="dropdown">
