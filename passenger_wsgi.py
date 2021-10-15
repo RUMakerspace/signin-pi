@@ -446,6 +446,7 @@ def admPage():
             Visit.exit_time,
             Visit.entry_time,
             Visit.granted,
+            Visit.visit_pk,
             Site.short_name,
         )
         .order_by(Visit.entry_time.desc())
@@ -531,10 +532,17 @@ def editUser():
 from helpers.visit import signOutAllUsers
 
 
-@application.route("/api/signOffForgottenMidnight")
-def terhjfiuf():
-    signOffForgottenMidnight()
-    return ""
+@application.route("/api/deleteVisit/<visit_pk>")
+@login_required
+def delVisit(visit_pk):
+    visitTemp = Visit.query.filter(Visit.visit_pk == visit_pk).first()
+
+    db.session.delete(visitTemp)
+    db.session.commit()
+
+    print("Deleted visit {}".format(visit_pk))
+
+    return redirect(url_for("admPage"))
 
 
 @application.route("/api/signOutCampusUsers/<site>")
