@@ -434,6 +434,10 @@ def firstVisit():
     # return render_template("firstvisit.html", prideMonth=True)
 
 
+from datetime import date
+from dateutil import tz
+
+
 @application.route("/admin/", methods=["GET", "POST"])
 @login_required
 def admPage():
@@ -460,6 +464,26 @@ def admPage():
         .all()
     )
 
+    est = tz.gettz("America/New_York")
+    today = datetime.utcnow().date()
+    start = datetime(today.year, today.month, today.day, tzinfo=tz.tzutc()).astimezone(
+        est
+    )
+    end = start + timedelta(1)
+
+    print(start)
+    print(end)
+
+    totalVisits = len(Visit.query.all())
+    todayVisits = len(
+        Visit.query.filter(
+            (Visit.entry_time > start)
+            & ((Visit.exit_time < end) | (Visit.exit_time == None))
+        ).all()
+    )
+
+    print(todayVisits)
+
     solomemberships = SoloMembership.query.limit(20).all()
     groupmem = (
         GroupMember.query.join(
@@ -481,6 +505,8 @@ def admPage():
         solo_memberships=solomemberships,
         users=users,
         convertTZ=convertTZ,  # helper method to localize UTC timestamps.
+        totalVisits=totalVisits,
+        todayVisits=todayVisits,
     )
 
 
