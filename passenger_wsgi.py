@@ -38,22 +38,8 @@ application.secret_key = open("supersecret.key").read()
 scheduler = APScheduler()
 scheduler.api_enabled = True  # may need to be disabled
 scheduler.init_app(application)
+application.app_context().push()
 scheduler.start()
-
-
-@scheduler.task(
-    "cron", id="sign_off_forgotten_students", minute=0, hour=0, day="*", month="*"
-)
-def signOffForgottenMidnight():
-    # signOutCampusUsers
-
-    sites = Site.query.all()
-
-    for s in sites:
-        signOutCampusUsers(s.site_pk)
-        print("Signed users out of {}".format(s.site_name))
-    print("Signed off students who forgot to sign out.")
-
 
 application.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///./db/datastore_local.db"
 # We may change this to another app at some point, like MariaDB but for now, this is fine.
@@ -85,6 +71,26 @@ from model.datastore import (
     GroupMembership,
     GroupMember,
 )
+
+
+from helpers.visit import signOutAllUsers
+
+
+@scheduler.task(
+    "cron", id="sign_off_forgotten_students", minute=0, hour=0, day="*", month="*"
+)
+def signOffForgottenMidnight():
+    # signOutCampusUsers
+
+    with application.app_context():
+
+        sites = Site.query.all()
+
+        for s in sites:
+            signOutAllUsers(s.site_pk)
+            print("Signed users out of {}".format(s.site_name))
+        print("Signed off students who forgot to sign out.")
+
 
 # This config is simply used to represent our initial site configuration
 # for repeatedly creating new simulated setups for mocking ig?
@@ -230,9 +236,9 @@ def mainEntryGranter(message=None):
     if lastVisitDate != None:
         lastVisitDate = lastVisitDate.entry_time.strftime("%Y/%m/%d")
 
-    print("current user")
+    # print("current user")
     print(currentUser)
-    print(cookies)
+    # print(cookies)
 
     memberships = getAllMemberships(currentUser.rums_pk)
 
@@ -527,9 +533,6 @@ def editUser():
         cards=cards,
         convertTZ=convertTZ,
     )
-
-
-from helpers.visit import signOutAllUsers
 
 
 @application.route("/api/deleteVisit/<visit_pk>")
