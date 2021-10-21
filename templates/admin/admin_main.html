@@ -18,10 +18,10 @@
 	
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits" type="button" role="tab" aria-controls="visits" aria-selected="true">Visits</button>
+    <button class="nav-link active" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits" type="button" role="tab" aria-controls="visits" aria-selected="true">Visits <span class="badge bg-primary">{{ totalVisits }}</span> | <span class="badge bg-primary">Today: {{ todayVisits }}</span></button>
   </li>
     <li class="nav-item" role="presentation">
-    <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Users</button>
+    <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false">Users <span class="badge bg-primary">{{ users|length }}</span></button>
   </li>
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="memberships-tab" data-bs-toggle="tab" data-bs-target="#memberships" type="button" role="tab" aria-controls="memberships" aria-selected="false">Memberships</button>
@@ -37,15 +37,6 @@
 
 <div class="tab-content" id="myTabContent">
   <div class="tab-pane fade show active" id="visits" role="tabpanel" aria-labelledby="visits-tab">
-  <div class="row">
-  <div class="col sm-6">
-  <h4>Visits Today  <span class="badge bg-danger">{{ todayVisits }}</span></h4>
-  </div>
-    <div class="col sm-6">
-  <h4>Visits All-Time  <span class="badge bg-danger">{{ totalVisits }}</span></h4>
-  </div>
-  
-  </div>
   <table class="table table-striped table-responsive">
   <thead>
     <tr>
