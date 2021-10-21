@@ -535,7 +535,7 @@ def editUser():
     )
 
 
-@application.route("/api/deleteVisit/<visit_pk>")
+@application.route("/api/visit/del/<visit_pk>")
 @login_required
 def delVisit(visit_pk):
     visitTemp = Visit.query.filter(Visit.visit_pk == visit_pk).first()
@@ -544,6 +544,28 @@ def delVisit(visit_pk):
     db.session.commit()
 
     print("Deleted visit {}".format(visit_pk))
+
+    return redirect(url_for("admPage"))
+
+
+@application.route("/api/visit/makeSignout/<visit_pk>")
+@login_required
+def signuserOutVisit(visit_pk):
+    visitTemp = Visit.query.filter(Visit.visit_pk == visit_pk).first()
+
+    visitTemp.exit_time = datetime.utcnow()
+    db.session.commit()
+
+    return redirect(url_for("admPage"))
+
+
+@application.route("/api/visit/removeFalseSignout/<visit_pk>")
+@login_required
+def visitRemoveFalseSignout(visit_pk):
+    visitTemp = Visit.query.filter(Visit.visit_pk == visit_pk).first()
+
+    visitTemp.exit_time = None
+    db.session.commit()
 
     return redirect(url_for("admPage"))
 

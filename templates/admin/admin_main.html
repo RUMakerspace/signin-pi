@@ -67,8 +67,10 @@
     
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu{{visit.visit_pk}}">
-    <li><a class="dropdown-item disabled" href="#">Remove Exit</a></li>
-    <li><a class="dropdown-item" href="/api/deleteVisit/{{visit.visit_pk}}">Delete Visit</a></li>
+    <li><a class="dropdown-item" href="/api/visit/del/{{visit.visit_pk}}">Delete Visit</a></li>
+		<li><div class="dropdown-divider"></div></li>
+	<li><a class="dropdown-item" href="/api/visit/makeSignout/{{visit.visit_pk}}">Sign User Out</a></li>
+    <li><a class="dropdown-item" href="/api/visit/removeFalseSignout/{{visit.visit_pk}}">Remove Signout</a></li>
 	<li><div class="dropdown-divider"></div></li>
 	<li><a class="dropdown-item" href="editUser?user_pk={{visit.rums_pk}}">Edit User</a></li>
   </ul>
