@@ -463,7 +463,7 @@ def admPage():
         .limit(20)
         .all()
     )
-
+    # https://stackoverflow.com/questions/14972802/determine-start-and-end-time-of-current-day-utc-est-utc-python
     est = tz.gettz("America/New_York")
     today = datetime.utcnow().date()
     start = datetime(today.year, today.month, today.day, tzinfo=tz.tzutc()).astimezone(
@@ -475,12 +475,7 @@ def admPage():
     print(end)
 
     totalVisits = len(Visit.query.all())
-    todayVisits = len(
-        Visit.query.filter(
-            (Visit.entry_time > start)
-            & ((Visit.exit_time < end) | (Visit.exit_time == None))
-        ).all()
-    )
+    todayVisits = len(Visit.query.filter((Visit.entry_time > start)).all())
 
     print(todayVisits)
 
