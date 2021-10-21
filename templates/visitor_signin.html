@@ -5,10 +5,10 @@
   
 function tH(e, qty) {
     //setCookie("cardNo",e.detail.scanCode, 1);
-
+onScan.detachFrom(document)
 	post("/api/checkSignin", {'cardNo': e.detail.scanCode})
 	
-	onScan.detachFrom(document)
+	
     return e.detail.code;
 }
 
