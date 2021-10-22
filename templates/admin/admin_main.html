@@ -91,9 +91,13 @@
   {% for u in users %}
   <div class="p-2">
   <div class="card" style="width: 18rem;">
-  <img src="" class="card-img-top" alt="">	
+  {% if u.picture %}
+  <img src="data:image/jpeg;base64, {{u.picture.decode('utf-8')}}" class="img-thumbnail rounded" alt="...">
+  {% endif %}
   <div class="card-body">
-    <h5 class="card-title">{{u.name}} {% if u.pronouns %}(<i>{{u.pronouns}}</i>){% endif %}</h5>
+    <h5 class="card-title">{{u.name}} </h5>
+	{% if u.pronouns %}<h6 class="card-subtitle mb-2 text-muted">({{u.pronouns}})</h6>{% endif %}
+	
     <p class="card-text">{{u.email}}</p>
     <a href="editUser?user_pk={{u.rums_pk}}" class="btn btn-primary">Edit User</a>
   </div>

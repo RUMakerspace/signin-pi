@@ -507,6 +507,8 @@ def admPage():
 
 from helpers.timezone import convertTZ
 
+import base64
+
 
 @application.route("/admin/editUser", methods=["GET", "POST"])
 @login_required
@@ -515,6 +517,7 @@ def editUser():
         newData = request.form.to_dict()
         print(newData)
         print(request.args.to_dict())
+        print(request.files.to_dict())
 
         rums_pk = request.args.to_dict()["user_pk"]
         currentUser = User.query.filter(User.rums_pk == rums_pk).first()
@@ -523,6 +526,13 @@ def editUser():
         currentUser.name = newData["inputName"]
         currentUser.pronouns = newData["inputPronouns"]
         currentUser.netid = newData["inputNetID"]
+
+        if "profilePic" in request.files:
+            print("User submitted new profile pic, checking.")
+            fileHolder = request.files["profilePic"].read()
+            if (len(fileHolder)) > 0:
+                print("User profile pic is not empty")
+                currentUser.picture = base64.b64encode(fileHolder)
 
         currentUser.rutgersActive = False
         if "rutgersActive" in newData:

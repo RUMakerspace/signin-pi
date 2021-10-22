@@ -6,7 +6,7 @@
         <h1 class="fw-light">Edit User</h1>
       </div>
 	</div>
-	<form method="post">
+	<form method="post" enctype="multipart/form-data">
 	<div class="row py-lg-1">
 	<div class="col-lg-6 col-md-6">
 	
@@ -36,6 +36,18 @@
 		<label class="form-check-label" for="rutgersVerified">Manually Verified User as Active Rutgers</label>
 	</div>
 		  
+	<hr>
+	<div class="row">
+	<div class="col-md-6">
+		{% if user.picture %}
+	<img src="data:image/jpeg;base64, {{user.picture.decode('utf-8')}}" class="img-thumbnail rounded" alt="...">
+	{% endif %}
+	</div>
+	<div class="col-md-6">
+	<label for="profilePic" class="form-label">User Picture</label>
+	<input class="form-control" type="file" name="profilePic" id="profilePic">
+	</div>
+	</div>
 	<hr> 
 	<!-- This moves the shadow profile shown box thing to here.-->
 	<div class="form-check form-switch">
