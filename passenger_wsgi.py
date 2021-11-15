@@ -405,6 +405,7 @@ def firstVisit():
         if qg != None:
             print("User exists with email and name, assigning card to them.")
             tempCard.rums_pk = qg.rums_pk
+
             db.session.commit()
 
         else:
@@ -608,3 +609,10 @@ def signOutCampusUsers(site):
     signOutAllUsers(site)
 
     return redirect(url_for("admPage"))
+
+
+@application.route("/test/timepicker", methods=["GET", "POST"])
+def timepicker():
+    if request.method == "POST":
+        print(request.form.to_dict())
+    return render_template("admin/timepicker.html")

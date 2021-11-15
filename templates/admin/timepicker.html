@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row py-lg-5">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <h1 class="fw-light">Add Visit (Manual)</h1>
+      </div>
+
+	<form method="post" enctype="multipart/form-data">
+	<div class="row py-lg-1">
+	<div class="col-lg-6 col-md-6">
+	<label for="entryTime">Entry Time</label>
+	<input name="entryTime" id="entryTime" type="text" placeholder="Like '1:18 PM'" class="form-control timepicker"></input>
+	</div>
+	
+	<div class="col-lg-6 col-md-6">
+	<label for="exitTime">Exit Time</label>
+	<input name="exitTime" id="exitTime" type="text" placeholder="Like '7:23 PM'" class="form-control timepicker"></input>
+	</div>
+	</div>
+	
+		
+	<div class="row">
+		<div class="col col-lg-3 py-3">
+		<button type="submit" class="btn btn-primary w-100">Update User</button>
+		</div>
+	</div>
+	
+	
+	</form>
+	</div>
+	
+		  
+<form method="post">
+
+</form>
+<script>
+
+$('input.timepicker').timepicker({
+    'timeFormat': 'h:mm p',
+    'dynamic': true,
+    'dropdown': false,
+    'scrollbar': false
+});
+
+</script>
+{% endblock %}
+
