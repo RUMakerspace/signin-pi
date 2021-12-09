@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+	<div class="row py-lg-1">
+	<div class="col-lg-12 col-md-12">
+	
+	<table class="table">
+	<tr>
+	<th>Date</th>
+	<th>Visits</th>
+	</tr>
+	{% for v in visitDays %}
+	<tr>
+	<td>{{v[0]}}</td>
+	<td>{{v[1]}}</td>
+	</tr>
+	{% endfor %}
+	</table>
+	
+	</div>
+{% endblock %}
+
