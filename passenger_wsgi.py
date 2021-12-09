@@ -616,3 +616,44 @@ def timepicker():
     if request.method == "POST":
         print(request.form.to_dict())
     return render_template("admin/timepicker.html")
+
+
+@application.route("/admin/report")
+def reportPage():
+    visits = (
+        Visit.query.join(User, Visit.rums_pk == User.rums_pk)
+        .join(Site, Visit.site_pk == Site.site_pk)
+        .add_columns(
+            User.name,
+            User.rums_pk,
+            User.pronouns,
+            User.netid,
+            User.email,
+            Visit.exit_time,
+            Visit.entry_time,
+            Visit.granted,
+            Visit.visit_pk,
+            Site.short_name,
+        )
+        .order_by(Visit.entry_time.desc())
+        .all()
+    )
+
+    visitDays = []
+    for v in visits:
+        if convertTZ(v.entry_time).strftime("%Y-%m-%d") not in visitDays:
+            visitDays.append(convertTZ(v.entry_time).strftime("%Y-%m-%d"))
+
+    # return str(visitDays)
+
+    for k, vd in enumerate(visitDays):
+        g = len(
+            [x for x in visits if convertTZ(x.entry_time).strftime("%Y-%m-%d") == vd]
+        )
+        visitDays[k] = [vd, g]
+    # convertTZ(visit.entry_time).strftime("%a %b %d, %Y at %I:%M %p")
+
+    visitDays = sorted(visitDays, key=lambda x: x[1])
+
+    # pprint(visits)
+    return render_template("admin/report.html", visitDays=visitDays)
