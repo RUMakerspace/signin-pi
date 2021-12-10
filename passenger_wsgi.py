@@ -653,7 +653,18 @@ def reportPage():
         visitDays[k] = [vd, g]
     # convertTZ(visit.entry_time).strftime("%a %b %d, %Y at %I:%M %p")
 
-    visitDays = sorted(visitDays, key=lambda x: x[1])
+    visitDays = sorted(visitDays, key=lambda x: x[0])
 
     # pprint(visits)
+
     return render_template("admin/report.html", visitDays=visitDays)
+
+
+@application.route("/admin/api/removeCardFromExistence/<cardNo>")
+@login_required
+def removeCardFuckYou(cardNo):
+    tempCard = Card.query.filter(Card.card_no == cardNo)
+    print(tempCard)
+    tempCard.delete()
+    db.session.commit()
+    return redirect(url_for("admPage"))
