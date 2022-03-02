@@ -9,8 +9,10 @@ from flask import (
     redirect,
     url_for,
     make_response,
+    Response,
 )
 from flask_login import LoginManager, login_required
+import csv
 
 reports = Blueprint("reports", __name__, template_folder="templates")
 
@@ -104,12 +106,46 @@ def visitsReportPage():
     )
 
 
+# NetID CSV Output Hell
+class Line(object):
+    def __init__(self):
+        self._line = None
+
+    def write(self, line):
+        self._line = line
+
+    def read(self):
+        return self._line
+
+
+def iter_csv(data):
+    line = Line()
+    writer = csv.writer(line)
+    for u in data:
+        writer.writerow([u.name, u.netid, u.email])
+        yield line.read()
+
+
+def csv_response(data):
+    response = Response(iter_csv(data), mimetype="text/csv")
+    response.headers["Content-Disposition"] = "attachment; filename=data.csv"
+    return response
+
+
 @reports.route("/userNetIDs")
 @login_required
-def netIDUsernamesReports():
+def netIDUsernamesReportCSV():
     users = User.query.filter(User.shadow_profile == 0).all()
 
     return render_template(
         "netID_report.html",
         users=users,
     )
+
+
+@reports.route("/userNetIDs.csv")
+@login_required
+def netIDUsernamesReports():
+    users = User.query.filter(User.shadow_profile == 0).all()
+
+    return csv_response(users)
