@@ -1,56 +1,60 @@
 {% extends "base.html" %}
 {% block content %}
- 
 <form action="/firstvisit" method="post">
-    <div class="row py-lg-5">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <h1 class="fw-light">Create Makerspace Profile</h1>
-        <p class="lead text-muted">This seems to be your first visit!  Welcome!  Please enter your name, Rutgers Email, and NetID for our records.</p>
-		
-		<div class=form-group">
-		
-	  {% if cardNo %}
-	  <input hidden name="cardNo" value="{{cardNo}}">
-	  {% endif %}
-	  
-		  <label for="inputRUEmail">Rutgers Email</label>
-		  <input pattern=".*@.*?rutgers\.edu" type="email" class="form-control" name="inputRUEmail" id="inputRUEmail" placeholder='Like "jsmith123@scarletmail.rutgers.edu"' required>
-		  
-		  <label for="inputNetID">NetID</label>
-		  <input type="text" class="form-control" name="inputNetID" id="inputNetID" placeholder='Like "jsmith123"'>
-		  
-		  <label for="inputName">Name</label>
-		  <input type="text" class="form-control" name="inputName" id="inputName" placeholder='Like "Jane Smith", or "Dr. Nox Adams."  Can be updated by staff.' required>
-		  
-		  
-		 <label for="cohortSelector">Select which cohort best describes you.</label>
-		  <select class="form-control" name="cohortSelector" id="cohortSelector" required>
-			<option>Student</option>
-			<option>Faculty / Staff</option>
-		  </select>
-		  
-		  <hr>
-		  <p> Please enter which pronouns apply to you (this will be used for email correspondence if needed.)</p>		  
-		  <input type="text" class="form-control" name="inputOtherPronouns" id="inputOtherPronouns" placeholder='she/her/hers, he/him, she/they, ey/em, etc.'>
-		  
-		    
-		  
+	<div class="row py-lg-5">
+		<div class="col-lg-8 col-md-10 mx-auto">
+			<h1 class="fw-light">Create Makerspace Profile</h1>
+			<p class="lead text-muted">This seems to be your first visit! Welcome! Please enter your name, Rutgers
+				Email, and NetID for our records.</p>
+
+			<div class="form-group">
+
+				{% if cardNo %}
+				<input hidden name="cardNo" value="{{cardNo}}">
+				{% endif %}
+
+				<label for="inputRUEmail">Rutgers Email</label>
+				<input pattern=".*@.*?rutgers\.edu" type="email" class="form-control" name="inputRUEmail"
+					id="inputRUEmail" placeholder='Like "jsmith123@scarletmail.rutgers.edu"' required>
+
+				<label for="inputNetID">NetID</label>
+				<input type="text" class="form-control" name="inputNetID" id="inputNetID"
+					placeholder='Like "jsmith123"'>
+
+				<label for="inputName">Name</label>
+				<input type="text" class="form-control" name="inputName" id="inputName"
+					placeholder='Like "Jane Smith", or "Dr. Nox Adams."  Can be updated by staff.' required>
 
 
-	<br>
-	<div class="row py-lg-2">
-	<div class="col-lg-8 mx-auto">
-          <button type="submit" class="btn btn-danger mb-2 w-100">Create Profile (only click once)</button>
-		  </div>
+				<label for="cohortSelector">Select which cohort best describes you.</label>
+				<select class="form-control" name="cohortSelector" id="cohortSelector" required>
+					<option>Student</option>
+					<option>Faculty / Staff</option>
+				</select>
+
+				<hr>
+				<p> Please enter which pronouns apply to you (this will be used for email correspondence if needed.)</p>
+				<input type="text" class="form-control" name="inputOtherPronouns" id="inputOtherPronouns"
+					placeholder='she/her/hers, he/him, she/they, ey/em, etc.'>
+
+
+
+
+
+				<br>
+				<div class="row py-lg-2">
+					<div class="col-lg-8 mx-auto">
+						<button type="submit" class="btn btn-danger mb-2 w-100">Create Profile (only click
+							once)</button>
+					</div>
+				</div>
+
+
+			</div>
+
+
+		</div>
+
 	</div>
-	
-	
-		</div>
-	
-		
-		</div>
-		
-      </div>
-	</form>
+</form>
 {% endblock %}
-

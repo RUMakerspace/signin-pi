@@ -127,7 +127,9 @@ def pageNotFound(error):
 login_manager = flask_login.LoginManager()
 login_manager.init_app(application)
 
+# Does this work?
 login_manager.blueprint_login_views = {"admin": "login"}
+
 # This function is just to set a session timer.
 @application.before_request
 def before_request():
@@ -337,7 +339,7 @@ def userHasEntry():
         if userTemp.shadow_profile:  # shadow profile catchall.
             print("User currently has shadow profile, gotta deal with that.")
             tempRedir = make_response(
-                redirect(url_for("firstVisit", cardNo=cardNo, loadTimer=1000 * 5 * 60))
+                redirect(url_for("firstVisit", cardNo=cardNo))
             )  # five minute expiry for other users typing shit in.
             return tempRedir
 
@@ -420,7 +422,9 @@ def firstVisit():
 
     else:
         return render_template(
-            "firstvisit.html", prideMonth=True, cardNo=request.args.to_dict()["cardNo"]
+            "firstvisit.html",
+            cardNo=request.args.to_dict()["cardNo"],
+            loadTimer=(1000 * 5 * 60),
         )
 
     # return render_template("firstvisit.html", prideMonth=True)
