@@ -7,18 +7,6 @@
   </div>
 </div>
 <div class="row py-lg-1">
-
-  <div class="row">
-    <div class="col">
-      <p>set campus: {% for campus in campuses %}<a href="/admin/api/setCampus/{{ campus.short_name }}">{{
-          campus.short_name
-          }}</a> {% endfor %}</p>
-      <p>sign all users out of site: {% for campus in campuses %}<a
-          href="/admin/api/signOutCampusUsers/{{ campus.site_pk }}">{{ campus.short_name }}</a> {% endfor %}</p>
-    </div>
-  </div>
-
-
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
       <button class="nav-link active" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits" type="button"
@@ -30,17 +18,12 @@
         aria-controls="users" aria-selected="false">Users <span class="badge bg-primary">{{ users|length
           }}</span></button>
     </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="memberships-tab" data-bs-toggle="tab" data-bs-target="#memberships" type="button"
-        role="tab" aria-controls="memberships" aria-selected="false">Memberships</button>
+    <li class="nav-item">
+      <a class="nav-link" href="/reports/">Reports</a>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="group-memberships-tab" data-bs-toggle="tab" data-bs-target="#group-memberships"
-        type="button" role="tab" aria-controls="group_memberships" aria-selected="false">Group Memberships</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="query-tab" data-bs-toggle="tab" data-bs-target="#query" type="button" role="tab"
-        aria-controls="query" aria-selected="false">Query User</button>
+      <button class="nav-link" id="siteconfig-tab" data-bs-toggle="tab" data-bs-target="#siteconfig" type="button"
+        role="tab" aria-controls="siteconfig" aria-selected="false">Site Config </button>
     </li>
   </ul>
 
@@ -151,9 +134,17 @@
       </table>
 
     </div>
-    <div class="tab-pane fade" id="group-memberships" role="tabpanel" aria-labelledby="group-memberships-tab">group
-      memberships</div>
-    <div class="tab-pane fade" id="query" role="tabpanel" aria-labelledby="query-tab">query page</div>
+    <div class="tab-pane fade" id="siteconfig" role="tabpanel" aria-labelledby="siteconfig-tab">
+      <div class="row">
+        <div class="col">
+          <p>set campus: {% for campus in campuses %}<a href="/admin/api/setCampus/{{ campus.short_name }}">{{
+              campus.short_name
+              }}</a> {% endfor %}</p>
+          <p>sign all users out of site: {% for campus in campuses %}<a
+              href="/admin/api/signOutCampusUsers/{{ campus.site_pk }}">{{ campus.short_name }}</a> {% endfor %}</p>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
