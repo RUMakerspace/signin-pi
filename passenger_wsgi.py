@@ -336,7 +336,9 @@ def userHasEntry():
 
         if userTemp.shadow_profile:  # shadow profile catchall.
             print("User currently has shadow profile, gotta deal with that.")
-            tempRedir = make_response(redirect(url_for("firstVisit", cardNo=cardNo)))
+            tempRedir = make_response(
+                redirect(url_for("firstVisit", cardNo=cardNo, loadTimer=1000 * 5 * 60))
+            )  # five minute expiry for other users typing shit in.
             return tempRedir
 
         else:  # not a ahadow profile, normal auth flow.
