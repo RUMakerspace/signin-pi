@@ -1,0 +1,16 @@
+{% block pageTitle %}
+<title>All Reports - RUMS</title>
+{% endblock %}
+
+{% extends "base.html" %}
+{% block content %}
+<div class="row py-lg-1">
+    <div class="col-lg-4 col-md-12">
+
+        <ul class="list-group">
+            <li class="list-group-item"><a href="visitsByDay">Visits (Totals Per Day)</a></li>
+            <li class="list-group-item"><a href="visits">Visits (Historical, All Time)</a></li>
+            <li class="list-group-item"><a href="userNetIDs">All Users NetID / Emails</a></li>
+        </ul>
+    </div>
+    {% endblock %}

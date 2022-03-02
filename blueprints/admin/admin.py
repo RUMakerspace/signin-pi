@@ -11,11 +11,11 @@ from flask import (
 from jinja2 import TemplateNotFound
 from flask_login import LoginManager, login_required
 from model.datastore import *  # so we can query using internal models.
-
+from helpers.visit import signOutAllUsers
 from datetime import date, datetime, timedelta  # used for broken shit.
 from dateutil import tz
 
-from helpers.timezone import convertTZ, todayInEST, todayEST2  # used to render in EST.
+from helpers.timezone import convertTZ, todayInEST  # used to render in EST.
 import base64  # used for profile pic functions.
 
 
@@ -50,7 +50,7 @@ def admPage():
 
     # Timezone filtering broken atm, fix!
     # https://stackoverflow.com/questions/14972802/determine-start-and-end-time-of-current-day-utc-est-utc-python
-    start = todayEST2()  # helper, may not work?
+    start = todayInEST()  # helper, may not work?
     end = start + timedelta(1)
 
     print(start)
@@ -210,7 +210,5 @@ def visitRemoveFalseSignout(visit_pk):
 @admin.route("api/signOutCampusUsers/<site>")
 @login_required
 def signOutCampusUsers(site):
-
     signOutAllUsers(site)
-
     return redirect(url_for("admin.admPage"))

@@ -17,14 +17,6 @@ def convertTZ(utc):
 
 
 def todayInEST():
-    today = datetime.utcnow().date()
-    start = datetime(today.year, today.month, today.day, tzinfo=tz.tzutc()).astimezone(
-        est
-    )
-    return start
-
-
-def todayEST2():
     midnight = (
         datetime.now(tz.tzutc())
         .astimezone(est)
