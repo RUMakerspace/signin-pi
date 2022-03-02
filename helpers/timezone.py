@@ -1,14 +1,33 @@
 # https://stackoverflow.com/questions/4770297/convert-utc-datetime-string-to-local-datetime
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import tz
+
+est = tz.gettz("America/New_York")
 
 
 def convertTZ(utc):
     from_zone = tz.gettz("UTC")
-    to_zone = tz.gettz("America/New_York")
+    to_zone = est
 
     # Tell the datetime object that it's in UTC time zone since
     # datetime objects are 'naive' by default
     utc = utc.replace(tzinfo=from_zone)
     return utc.astimezone(to_zone)
+
+
+def todayInEST():
+    today = datetime.utcnow().date()
+    start = datetime(today.year, today.month, today.day, tzinfo=tz.tzutc()).astimezone(
+        est
+    )
+    return start
+
+
+def todayEST2():
+    midnight = (
+        datetime.now(tz.tzutc())
+        .astimezone(est)
+        .replace(hour=0, minute=0, second=0, microsecond=0)
+    )
+    return midnight

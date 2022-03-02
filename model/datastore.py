@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -45,7 +45,9 @@ class Visit(db.Model):
     rums_pk = db.Column(db.Integer, db.ForeignKey("user.rums_pk"), nullable=True)
     card_pk = db.Column(db.String(20), db.ForeignKey("card.card_pk"), nullable=False)
     site_pk = db.Column(db.String(20), db.ForeignKey("site.site_pk"), nullable=False)
-    entry_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    entry_time = db.Column(
+        db.DateTime, nullable=False, default=datetime.now(timezone.utc)
+    )  # we need to set our source TZ to UTC.  For some reason.  hate this.
     exit_time = db.Column(
         db.DateTime, nullable=True, default=None
     )  # Must always update on exit or close for the day.
