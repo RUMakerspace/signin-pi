@@ -428,13 +428,3 @@ def firstVisit():
         )
 
     # return render_template("firstvisit.html", prideMonth=True)
-
-
-from helpers.timezone import convertTZ
-
-
-@application.route("/test/timepicker", methods=["GET", "POST"])
-def timepicker():
-    if request.method == "POST":
-        print(request.form.to_dict())
-    return render_template("admin/timepicker.html")
