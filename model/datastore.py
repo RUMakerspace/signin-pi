@@ -12,7 +12,6 @@ db = SQLAlchemy()
 # GroupMembership
 # GroupMember
 
-
 class Card(db.Model):
     card_pk = db.Column(db.Integer, primary_key=True)
     card_no = db.Column(db.String(20), unique=True, nullable=False)
