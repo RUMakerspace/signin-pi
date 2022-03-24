@@ -193,6 +193,10 @@ def logout():
 
 @application.route("/")
 def indexPage():
+    loadTimer = 0
+    if "loadTimer" in request.args.to_dict():
+        loadTimer = 5000
+
     campusID = int(request.cookies.to_dict()["campus"])
 
     if "campus" not in request.cookies.to_dict():
@@ -203,7 +207,12 @@ def indexPage():
     campusName = Site.query.filter_by(site_pk=campusID).first().site_name
 
     xg = make_response(
-        render_template("visitor_signin.html", siteName=campusName, prideMonth=True)
+        render_template(
+            "visitor_signin.html",
+            siteName=campusName,
+            prideMonth=True,
+            loadTimer=loadTimer,
+        )
     )
 
     return xg

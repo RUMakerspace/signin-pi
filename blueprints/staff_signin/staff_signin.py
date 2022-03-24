@@ -43,7 +43,7 @@ def mainRoute():
 
         if currentUser == None:
             flash("Make a normal profile first please!")
-            return redirect(url_for("indexPage"))
+            return redirect(url_for("indexPage", loadTimer=5000))
 
         if "stafflogs" not in shelvestore:
             shelvestore["stafflogs"] = []
@@ -56,6 +56,9 @@ def mainRoute():
         ]
         if len(tempVisitsStaff) > 0:
             tempVisitsStaff[0]["exit"] = datetime.now(timezone.utc)
+            tempVisitsStaff[0]["hours"] = str(
+                tempVisitsStaff[0]["exit"] - tempVisitsStaff[0]["entry"]
+            )
             flash("signed out, thank you.")
         else:
             shelvestore["stafflogs"].append(
@@ -64,11 +67,12 @@ def mainRoute():
                     "rums_pk": currentUser.rums_pk,
                     "entry": datetime.now(timezone.utc),
                     "name": currentUser.name,
+                    "hours": None,
                 }
             )
             flash("Signed in, thank you ".format(currentUser.name))
         shelvestore.sync()
-        return redirect(url_for("indexPage"))
+        return redirect(url_for("indexPage", loadTimer=5000))
 
 
 @staff_signin.route("/viewstafflogs")

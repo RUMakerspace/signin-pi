@@ -149,3 +149,8 @@ def netIDUsernamesReports():
     users = User.query.filter(User.shadow_profile == 0).all()
 
     return csv_response(users)
+
+@reports.route('/staff_visits')
+@login_required
+def mover():
+    return redirect(url_for('staff_signin.staffLogs'))
