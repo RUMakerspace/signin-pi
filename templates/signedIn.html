@@ -1,37 +1,85 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="row py-lg-5">
-      <div class="col-lg-8 col-md-10 mx-auto">
-        <h1 class="fw-light">Successfully Signed In</h1>
-      </div>
+
+<script>
+
+	function tH(e, qty) {
+		onScan.detachFrom(document)
+		post("/api/checkSignin", { 'cardNo': e.detail.scanCode })
+
+		return e.detail.code;
+	}
+
+	setTimeout(() => {
+		onScan.attachTo(document);
+		document.addEventListener('scan', tH);
+	}, 1000);
+
+
+	/**
+	 * sends a request to the specified url from a form. this will change the window location.
+	 * @param {string} path the path to send the post request to
+	 * @param {object} params the parameters to add to the url
+	 * @param {string} [method=post] the method to use on the form
+	 */
+
+	function post(path, params, method = 'post') {
+
+		// The rest of this code assumes you are not using a library.
+		// It can be made less verbose if you use one.
+		const form = document.createElement('form');
+		form.method = method;
+		form.action = path;
+
+		for (const key in params) {
+			if (params.hasOwnProperty(key)) {
+				const hiddenField = document.createElement('input');
+				hiddenField.type = 'hidden';
+				hiddenField.name = key;
+				hiddenField.value = params[key];
+
+				form.appendChild(hiddenField);
+			}
+		}
+
+		document.body.appendChild(form);
+		form.submit();
+	}
+
+</script>
+
+<div class="row py-lg-5">
+	<div class="col-lg-8 col-md-10 mx-auto">
+		<h1 class="fw-light">Successfully Signed In</h1>
 	</div>
-	<div class="row py-lg-1">
-      <div class="col mx-auto">
-	  {% if no_profile %} 
-	  
-	  <h3>Your card has been collected.</h3>
-	  <h3>At a subsequent visit we'll ask you to create your profile.</h3>
-	  
-	  <h4><b>Be sure to sign out when you leave! (just tap your card again)</b></h4>
-	  {% endif %}
-	  {% if user %}
-        <h3>Name: <b>{{ user.name }}</b></h3>
+</div>
+<div class="row py-lg-1">
+	<div class="col mx-auto">
+		{% if no_profile %}
+
+		<h3>Your card has been collected.</h3>
+		<h3>At a subsequent visit we'll ask you to create your profile.</h3>
+
+		<h4><b>Be sure to sign out when you leave! (just tap your card again)</b></h4>
+		{% endif %}
+		{% if user %}
+		<h3>Name: <b>{{ user.name }}</b></h3>
 		{% if user.pronouns %}</h4>({{user.pronouns}})</h4>{% endif %}
 		{% if user.netid %}
 		<h6>NetID: <b>{{user.netid }}</b></h6>
 		{% endif %}
-		
+
 		<hr>
 		<h4>Last Visit: <b>{{lastVisitDate}}</b></h4>
-		<h4>Total Visits:  {{numVisits}}</h4>
-		
-      </div>
-      <div class="col mx-auto">
-        <h3>Memberships</b></h3>
+		<h4>Total Visits: {{numVisits}}</h4>
+
+	</div>
+	<div class="col mx-auto">
+		<h3>Memberships</b></h3>
 		{% for m in memberships %}
 		<p>{{m.name}}<br>({{m.start}}) ⇒ ({{m.end}})</p>
 		{% endfor %}
-		
+
 		{% if memberships|length == 0 %}
 		<p><i>no memberships</i></p>
 		{% endif %}
@@ -39,8 +87,7 @@
 		{% if membershipExpiryDate %}
 		<p>Membership expires <b>{{ membershipExpiryDate }}</b></p>
 		{% endif %}
-      </div>
-	  {% endif %}
-    </div>
+	</div>
+	{% endif %}
+</div>
 {% endblock %}
-
