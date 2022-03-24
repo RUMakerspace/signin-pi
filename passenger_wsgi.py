@@ -71,9 +71,11 @@ from model.datastore import (
 
 from blueprints.admin.admin import admin
 from blueprints.reports.reports import reports
+from blueprints.staff_signin.staff_signin import staff_signin
 
 application.register_blueprint(admin, url_prefix="/admin")
 application.register_blueprint(reports, url_prefix="/reports")
+application.register_blueprint(staff_signin, url_prefix="/staff")
 
 from helpers.visit import signOutAllUsers
 
